@@ -1,0 +1,15 @@
+{% extends 'core/layouts/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Favoritos" %}{% endblock %} 
+
+{% block content %}
+
+{# Página de favoritos do usuário, onde ele pode ver os livros que demonstrou interesse. #}
+    {% include 'core/components/top_bar.html' %}
+    <div class="page-content-wrapper">
+        {% trans "Meus interesses" as interesses_label %}
+        {% include 'core/components/book_slider.html' with section_title=interesses_label books_list=interesses_books %}
+    </div>
+
+{% endblock %}

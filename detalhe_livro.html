@@ -1,0 +1,142 @@
+{% extends 'core/layouts/base.html' %}
+{% load static i18n %}
+
+{% block title %}{{ livro.titulo }}{% endblock %}
+{% block extra_css %}
+{% endblock %}
+{% block content %}
+
+{% include 'core/components/top_bar.html' %}
+
+{# Página de detalhes do livro,onde user ve todas as informações do livro e pode editar elas se for dono ou demonstrar interesse se não #}
+
+<div class="page-content-wrapper">
+    <a href="{{ back_url }}" class="btn-back" style="text-decoration: none;">
+        <i class="fa-solid fa-angle-left"></i> {% trans "Voltar" %}
+    </a>
+
+    <div class="book-detail-container">
+
+        {# Mostrando a capa do livro ou um placeholder caso não tenha capa #}
+        <div class="book-detail-cover-side">
+            {% if livro.capa %}
+            <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}">
+            {% else %}
+            <div class="placeholder-capa-large">{% trans "Sem capa" %}</div>
+            {% endif %}
+        </div>
+
+        <div class="book-detail-info-side">
+
+            <div class="book-detail-header">
+                <div class="book-title-area">
+                    <h2>{{ livro.titulo }}</h2>
+                </div>
+
+                {#Verificando se o usuário é dono do livro ou não e dando permissões correspondentes#}
+                {% if request.user != livro.dono %}
+                <a href="{% url 'perfil_publico' livro.dono.id %}" class="book-owner-area book-owner-link">
+                    {% if livro.dono.perfil.foto_perfil %}
+                    <img src="{{ livro.dono.perfil.foto_perfil.url }}" alt="{% trans 'Dono' %}">
+                    {% else %}
+                    <div class="avatar-placeholder-mini" style="width: 35px; height: 35px; font-size: 14px;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    {% endif %}
+                    <span>{{ livro.dono.first_name|default:livro.dono.username|title }}</span>
+                </a>
+                {% else %}
+                <div class="book-owner-area">
+                    {% if livro.dono.perfil.foto_perfil %}
+                    <img src="{{ livro.dono.perfil.foto_perfil.url }}" alt="{% trans 'Dono' %}">
+                    {% else %}
+                    <div class="avatar-placeholder-mini" style="width: 35px; height: 35px; font-size: 14px;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    {% endif %}
+                    <span>{{ livro.dono.first_name|default:livro.dono.username|title }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            {# Mostrando detalhes do livro (autor, gênero, estado, disponibilidade e status) #}
+            <div class="book-attributes">
+                <div class="attr-col">
+                    <span class="attr-label">{% trans "Autor" %}</span>
+                    <span class="attr-value">{{ livro.autor }}</span>
+                </div>
+                <div class="attr-col">
+                    <span class="attr-label">{% trans "Gênero" %}</span>
+                    <span class="attr-value">{{ livro.get_genero_display }}</span>
+                </div>
+                <div class="attr-col">
+                    <span class="attr-label">{% trans "Estado" context "book_condition" %}</span>
+                    <span class="attr-value">{{ livro.get_estado_display }}</span>
+                </div>
+                <div class="attr-col">
+                    <span class="attr-label">{% trans "Disponível" %}</span>
+                    <span class="attr-value">
+                        {% if livro.disponivel %}
+                            {% trans "Sim" %}
+                        {% else %}
+                            {% trans "Não" %}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="attr-col">
+                    <span class="attr-label">{% trans "Status" %}</span>
+                    <span class="attr-value">{{ livro.get_status_display|title }}</span>
+                </div>
+            </div>
+
+            {# Ações disponíveis para o usuário dependendo se ele é dono do livro ou não e se já demonstrou interesse ou não #}
+            <hr class="book-divider">
+            <div class="book-actions"></div>
+            {% if request.user == livro.dono %}
+            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:12px;">
+	                <a href="{% url 'editar_livro' livro.id %}?next={{ back_url|urlencode }}" class="btn-blue-action"
+	                    style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 0;">
+	                    <i class="fa-solid fa-pen"></i> {% trans "Editar livro" %}
+	                </a>
+
+                <form method="post" action="{% url 'excluir_livro' livro.id %}" style="margin:0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger-action"
+                        style="display:inline-flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-trash"></i> {% trans "Excluir livro" %}
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            {# Se o usuário não for o dono do livro, verificamos se ele já demonstrou interesse ou não e mostramos as ações correspondentes #}
+            {% if meu_interesse %}
+            {% trans "Status" %}: {% trans meu_interesse.get_status_display %}
+            <form method="post" action="{% url 'excluir_interesse' livro.id %}" style="margin:0;">
+                {% csrf_token %}
+                {# Mantém a origem pra não quebrar o "Voltar" depois do POST #}
+                <input type="hidden" name="next" value="{{ back_url }}">
+                <button type="submit" class="btn-danger-action"
+                    style="display:inline-flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-trash"></i> {% trans "Excluir interesse" %}
+                </button>
+            </form>
+	            {% else %}
+	                {% if livro.status == 'disponivel' and livro.disponivel %}
+	                    <form method="post" action="{% url 'criar_interesse' livro.id %}" style="margin:0;">
+	                        {% csrf_token %}
+	                        {# Mantém a origem pra não quebrar o "Voltar" depois do POST #}
+	                        <input type="hidden" name="next" value="{{ back_url }}">
+	                        <button type="submit" class="btn-blue-action">
+	                            <i class="fa-solid fa-book-open"></i> {% trans "Tenho interesse" %}
+	                        </button>
+	                    </form>
+	                {% endif %}
+	            {% endif %}
+	            {% endif %}
+	        </div>
+
+    </div>
+</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'core/layouts/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Adicionar livro" %}{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% include 'core/components/top_bar.html' %}
+
+<div class="page-content-wrapper">
+    <h2 class="section-title">
+        {% if editando %}
+        {% trans "EDITAR LIVRO" %}
+        {% else %}
+        {% trans "ADICIONAR LIVRO" %}
+        {% endif %}
+    </h2>
+
+    <div class="add-book-wrapper">
+        <div class="add-book-form-side">
+
+	            <form class="app-custom-form" method="post" enctype="multipart/form-data">
+	                {% csrf_token %}
+                    {# Se estivermos editando um livro, incluímos um campo oculto para redirecionar o usuário de volta para a página anterior após a edição. #}
+	                {% if editando %}
+	                    <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
+	                {% endif %}
+                    {# Campos para título, autor e gênero do livro #}
+	                <p><label>{% trans "Título" %}</label> {{ form.titulo }}</p>
+	                <p><label>{% trans "Autor" %}</label> {{ form.autor }}</p>
+	                <p><label>{% trans "Gênero" %}</label> {{ form.genero }}</p>
+
+                    {# Campo para selecionar a condição do livro #}
+	                <div class="form-row">
+	                    <p class="half-width"><label>{% trans "Estado" context "book_condition" %}</label> {{ form.estado }}</p>
+	                    {% if editando %}
+	                        <p class="half-width"><label>{% trans "Status" %}</label> {{ form.status }}</p>
+	                    {% endif %}
+	                </div>
+
+                {# Campo para upload da capa do livro#}
+                <div class="cover-upload-field">
+                    <label for="{{ form.capa.id_for_label }}">{% trans "Capa" %}</label>
+                    {{ form.capa }}
+                    <p class="upload-cover-hint">
+                        {% trans "Selecione uma imagem para a capa. O nome do arquivo escolhido aparece no campo abaixo." %}
+                    </p>
+                </div>
+
+                <button type="submit" class="btn-blue" style="margin-top: 20px;">{% trans "Confirmar" %}</button>
+            </form>
+        </div>
+
+        {# Mostrando a capa #}
+        <div class="add-book-photo-side">
+            <div class="book-cover-preview" id="imagePreview">
+                {% if form.instance.capa %}
+                    <img src="{{ form.instance.capa.url }}" alt="{% trans 'Capa atual do livro' %}">
+                {% else %}
+                    <span class="placeholder-text">{% trans "Sem capa" %}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}

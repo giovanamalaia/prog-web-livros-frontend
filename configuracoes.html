@@ -1,0 +1,82 @@
+{% extends 'core/layouts/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Configurações" %}{% endblock %}
+
+{% block content %}
+
+{% include 'core/components/top_bar.html' %}
+{# Página de configurações do usuário, onde ele pode editar suas informações pessoais e localização. #}
+
+<form class="profile-page-wrapper" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {# Preenchendo informações pessoais do usuário #}
+    <div class="profile-form-side app-custom-form">
+        <p>
+            <label>{% trans "Nome de usuário" %}</label>
+            <input type="text" name="username" value="{{ form_values.username }}" required>
+        </p>
+        <p>
+            <label>{% trans "Nome" %}</label>
+            <input type="text" name="first_name" value="{{ form_values.first_name }}">
+        </p>
+        <p>
+            <label>{% trans "Sobrenome" %}</label>
+            <input type="text" name="last_name" value="{{ form_values.last_name }}">
+        </p>
+        <p>
+            <label>{% trans "Email" %}</label>
+            <input type="email" name="email" value="{{ form_values.email }}" required>
+        </p>
+
+        {# Preenchendo o estado e cidade do usuário #}
+        <p class="form-hint">{% trans "Selecione o estado e clique em \"Carregar cidades\" para habilitar a lista." %}</p>
+        <div class="form-row">
+            <p class="half-width">
+                <label>{% trans "Estado" context "state" %}</label>
+                {{ localizacao_form.estado }}
+            </p>
+            <p class="half-width">
+                <label>{% trans "Cidade" %}</label>
+                {{ localizacao_form.cidade }}
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+            <button type="submit" name="action" value="refresh_cities" class="btn-secondary">{% trans "Carregar cidades" %}</button>
+            <button type="submit" name="action" value="submit" class="btn-blue">{% trans "Salvar alterações" %}</button>
+
+         
+        </div>
+    </div>
+
+    {#Mostrando a foto de perfil do usuário e opção para trocar a foto #}
+    <div class="profile-photo-side">
+        <div class="large-avatar-container profile-photo-preview">
+            {% if user.perfil.foto_perfil %}
+            <img src="{{ user.perfil.foto_perfil.url }}" alt="{% blocktrans with username=user.username %}Foto de {{ username }}{% endblocktrans %}">
+            {% else %}
+            <div class="avatar-placeholder-large">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-upload-field">
+            <label for="id_foto_perfil">{% trans "Trocar foto" %}</label>
+            <input type="file" name="foto_perfil" id="id_foto_perfil" accept="image/*">
+            <p class="upload-cover-hint">
+                {% trans "Escolha uma nova imagem e clique em" %} <b>{% trans "Salvar alterações" %}</b> {% trans "para atualizar seu perfil." %}
+            </p>
+        </div>
+
+        {# Link para sair da conta #}
+        <a href="{% url 'logout' %}" class="btn-danger-action btn-logout"
+            style="display: block; text-align: center; margin-top: 15px;">
+            <i class="fa-solid fa-arrow-right-from-bracket" style="margin-right: 8px;"></i> {% trans "Sair" %}
+        </a>
+    </div>
+</form>
+
+{% endblock %}
