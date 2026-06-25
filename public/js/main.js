@@ -34,6 +34,7 @@ let view = localStorage.getItem(AUTH_KEY) === '1' ? 'home' : 'login';
 let notice = '';
 let noticeKind = 'info';
 let selectedBookId = 0;
+let detailReturnView = 'home';
 let editingBook = null;
 let searchQuery = '';
 let cities = null;
@@ -206,6 +207,22 @@ function layout(content, options = {}) {
         return `<div class="app-layout auth-only-layout">${toast}<main class="app-content">${content}</main></div>`;
     }
     return `<div class="app-layout">${sidebar()}${toast}<main class="app-content">${topBar(Boolean(options.search))}${content}</main></div>`;
+}
+async function refreshTopBar() {
+    if (localStorage.getItem(AUTH_KEY) !== '1')
+        return;
+    if (view === 'login' || view === 'cadastro' || view === 'senha' || view === 'nova-senha')
+        return;
+    const oldTopBar = app.querySelector('.top-bar');
+    if (!oldTopBar)
+        return;
+    const panel = app.querySelector('[data-notification-panel]');
+    const wasOpen = panel ? !panel.hidden : false;
+    await Promise.all([loadNotifications(), loadCurrentUser()]);
+    oldTopBar.outerHTML = topBar(view === 'home' || view === 'favoritos');
+    const newPanel = app.querySelector('[data-notification-panel]');
+    if (newPanel)
+        newPanel.hidden = !wasOpen;
 }
 function authView(kind) {
     const isLogin = kind === 'login';
@@ -386,7 +403,7 @@ function detalheView(book) {
   `;
     return layout(`
     <div class="page-content-wrapper">
-      <button class="btn-back btn-as-link" data-view="home" type="button"><i class="fa-solid fa-angle-left"></i> Voltar</button>
+      <button class="btn-back btn-as-link" data-action="back-detail" type="button"><i class="fa-solid fa-angle-left"></i> Voltar</button>
       <div class="book-detail-container">
         <div class="book-detail-cover-side">${cover(book, true)}</div>
         <div class="book-detail-info-side">
@@ -520,7 +537,11 @@ app.addEventListener('click', async (event) => {
     }
     else if (action === 'details') {
         selectedBookId = bookId;
+        detailReturnView = view === 'detalhe_livro' ? detailReturnView : view;
         await render('detalhe_livro');
+    }
+    else if (action === 'back-detail') {
+        await render(detailReturnView);
     }
     else if (action === 'edit-book') {
         const response = await api(`/livro/${bookId}/`);
@@ -658,3 +679,6 @@ app.addEventListener('submit', async (event) => {
     }
 });
 void render(view);
+window.setInterval(() => {
+    void refreshTopBar();
+}, 10000);
