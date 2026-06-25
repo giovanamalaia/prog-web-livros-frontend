@@ -1,5 +1,3 @@
-import './style.css'
-
 type View = 'login' | 'cadastro' | 'senha' | 'nova-senha' | 'home' | 'favoritos' | 'perfil' | 'configuracoes' | 'adicionar_livro' | 'detalhe_livro'
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
 type NoticeKind = 'success' | 'error' | 'info'
@@ -44,7 +42,7 @@ if (!appElement) throw new Error('Elemento #app nao encontrado.')
 const app = appElement
 
 const AUTH_KEY = 'livro_auth'
-const API_BASE = '/api'
+const backendAddress = 'http://127.0.0.1:8000/api'
 
 const estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
 const generos = [
@@ -89,11 +87,11 @@ if (resetUid && resetToken) view = 'nova-senha'
 
 function html(value: unknown): string {
   return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
 }
 
 function setNotice(message = '', kind: NoticeKind = 'info'): void {
@@ -114,7 +112,7 @@ function cookie(name: string): string {
 async function loadCities(): Promise<void> {
   if (cities) return
   try {
-    const response = await fetch('/ibge_cidades.json')
+    const response = await fetch('public/ibge_cidades.json')
     cities = await response.json() as CityData
   } catch {
     cities = {}
@@ -131,7 +129,7 @@ async function ensureCsrf(): Promise<void> {
   if (csrfReady) return
   const controller = new AbortController()
   const timeout = window.setTimeout(() => controller.abort(), 5000)
-  await fetch(`${API_BASE}/csrf/`, { credentials: 'include', signal: controller.signal })
+  await fetch(`${backendAddress}/csrf/`, { credentials: 'include', signal: controller.signal })
   window.clearTimeout(timeout)
   csrfReady = true
 }
@@ -155,7 +153,7 @@ async function api<T>(path: string, options: { method?: Method; body?: BodyInit 
 
     const controller = new AbortController()
     const timeout = window.setTimeout(() => controller.abort(), 7000)
-    const response = await fetch(`${API_BASE}${path}`, { method, headers, body, credentials: 'include', signal: controller.signal })
+    const response = await fetch(`${backendAddress}${path}`, { method, headers, body, credentials: 'include', signal: controller.signal })
     window.clearTimeout(timeout)
     if (response.status === 401) localStorage.removeItem(AUTH_KEY)
     return await response.json() as ApiResponse<T>
