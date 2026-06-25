@@ -43,6 +43,7 @@ let currentUser = null;
 let csrfReady = false;
 let resetUid = new URLSearchParams(location.search).get('uid') || '';
 let resetToken = new URLSearchParams(location.search).get('token') || '';
+let isRefreshing = false;
 if (resetUid && resetToken)
     view = 'nova-senha';
 function html(value) {
@@ -126,7 +127,7 @@ async function loadNotifications() {
         notifications = [];
         return;
     }
-    const response = await api('/notificacoes/');
+    const response = await api(`/notificacoes/?_=${Date.now()}`);
     notifications = response.status === 'success' ? response.data || [] : [];
 }
 async function loadCurrentUser() {
@@ -208,21 +209,52 @@ function layout(content, options = {}) {
     }
     return `<div class="app-layout">${sidebar()}${toast}<main class="app-content">${topBar(Boolean(options.search))}${content}</main></div>`;
 }
-async function refreshTopBar() {
+function homeContent(data) {
+    return `
+    <div class="page-content-wrapper" data-live-home>
+      ${data?.livros_perto?.length ? slider('Perto de você', data.livros_perto) : ''}
+      ${slider('Últimos', data?.latest_books || [])}
+      ${(data?.livros_por_genero || []).map((group) => slider(group.titulo_secao, group.livros)).join('')}
+    </div>
+  `;
+}
+async function refreshHomeBooks() {
+    if (view !== 'home')
+        return;
+    if (document.activeElement?.matches('.search-box input'))
+        return;
+    const wrapper = app.querySelector('[data-live-home]');
+    if (!wrapper)
+        return;
+    const query = searchQuery ? `q=${encodeURIComponent(searchQuery)}&` : '';
+    const response = await api(`/home/?${query}_=${Date.now()}`);
+    if (response.status === 'success') {
+        wrapper.outerHTML = homeContent(response.data);
+    }
+}
+async function refreshLiveData() {
     if (localStorage.getItem(AUTH_KEY) !== '1')
         return;
     if (view === 'login' || view === 'cadastro' || view === 'senha' || view === 'nova-senha')
         return;
-    const oldTopBar = app.querySelector('.top-bar');
-    if (!oldTopBar)
+    if (isRefreshing)
         return;
-    const panel = app.querySelector('[data-notification-panel]');
-    const wasOpen = panel ? !panel.hidden : false;
-    await Promise.all([loadNotifications(), loadCurrentUser()]);
-    oldTopBar.outerHTML = topBar(view === 'home' || view === 'favoritos');
-    const newPanel = app.querySelector('[data-notification-panel]');
-    if (newPanel)
-        newPanel.hidden = !wasOpen;
+    isRefreshing = true;
+    try {
+        const oldTopBar = app.querySelector('.top-bar');
+        const panel = app.querySelector('[data-notification-panel]');
+        const wasOpen = panel ? !panel.hidden : false;
+        await Promise.all([loadNotifications(), loadCurrentUser(), refreshHomeBooks()]);
+        if (oldTopBar) {
+            oldTopBar.outerHTML = topBar(view === 'home' || view === 'favoritos');
+            const newPanel = app.querySelector('[data-notification-panel]');
+            if (newPanel)
+                newPanel.hidden = !wasOpen;
+        }
+    }
+    finally {
+        isRefreshing = false;
+    }
 }
 function authView(kind) {
     const isLogin = kind === 'login';
@@ -320,13 +352,7 @@ function slider(title, books) {
   `;
 }
 function homeView(data) {
-    return layout(`
-    <div class="page-content-wrapper">
-      ${data?.livros_perto?.length ? slider('Perto de você', data.livros_perto) : ''}
-      ${slider('Últimos', data?.latest_books || [])}
-      ${(data?.livros_por_genero || []).map((group) => slider(group.titulo_secao, group.livros)).join('')}
-    </div>
-  `, { search: true });
+    return layout(homeContent(data), { search: true });
 }
 function favoritosView(items = []) {
     return layout(`
@@ -680,5 +706,5 @@ app.addEventListener('submit', async (event) => {
 });
 void render(view);
 window.setInterval(() => {
-    void refreshTopBar();
-}, 10000);
+    void refreshLiveData();
+}, 1000);
