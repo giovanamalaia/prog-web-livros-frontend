@@ -33,9 +33,9 @@ type HomeData = {
   livros_por_genero: Array<{ titulo_secao: string; livros: Book[] }>
 }
 
-type ProfileData = { meus_livros: Book[] }
+type ProfileData = { username: string; first_name: string; last_name: string; cidade: string | null; foto_perfil_url?: string | null; meus_livros: Book[] }
 type Favorite = { id: number; status_interesse: string; livro_id: number; livro_titulo: string; livro_autor: string; livro_capa_url?: string | null }
-type SettingsData = { username: string; first_name: string; last_name: string; email: string; estado: string | null; cidade: string | null }
+type SettingsData = { username: string; first_name: string; last_name: string; email: string; estado: string | null; cidade: string | null; foto_perfil_url?: string | null }
 type NotificationItem = { id: number; usuario_nome: string; livro_titulo: string }
 type CityData = Record<string, { nome: string; cidades: string[] }>
 
@@ -80,6 +80,7 @@ let editingBook: Book | null = null
 let searchQuery = ''
 let cities: CityData | null = null
 let notifications: NotificationItem[] = []
+let currentUser: SettingsData | null = null
 let csrfReady = false
 let resetUid = new URLSearchParams(location.search).get('uid') || ''
 let resetToken = new URLSearchParams(location.search).get('token') || ''
@@ -147,11 +148,10 @@ async function api<T>(path: string, options: { method?: Method; body?: BodyInit 
     body = JSON.stringify(options.body)
   }
 
-  const token = cookie('csrftoken')
-  if (token && method !== 'GET') headers.set('X-CSRFToken', token)
-
   try {
     if (method !== 'GET') await ensureCsrf()
+    const token = cookie('csrftoken')
+    if (token && method !== 'GET') headers.set('X-CSRFToken', token)
 
     const controller = new AbortController()
     const timeout = window.setTimeout(() => controller.abort(), 7000)
@@ -171,6 +171,15 @@ async function loadNotifications(): Promise<void> {
   }
   const response = await api<NotificationItem[]>('/notificacoes/')
   notifications = response.status === 'success' ? response.data || [] : []
+}
+
+async function loadCurrentUser(): Promise<void> {
+  if (localStorage.getItem(AUTH_KEY) !== '1') {
+    currentUser = null
+    return
+  }
+  const response = await api<SettingsData>('/configuracoes/')
+  currentUser = response.status === 'success' ? response.data || null : null
 }
 
 function active(name: View): string {
@@ -196,6 +205,11 @@ function sidebar(): string {
 }
 
 function topBar(showSearch = false): string {
+  const profileName = currentUser?.first_name || currentUser?.username || 'Perfil'
+  const profileAvatar = currentUser?.foto_perfil_url
+    ? `<img src="${html(currentUser.foto_perfil_url)}" alt="${html(profileName)}" class="avatar-mini">`
+    : '<div class="avatar-placeholder-mini"><i class="fa-solid fa-user"></i></div>'
+
   return `
     <header class="top-bar">
       ${showSearch ? `
@@ -205,10 +219,9 @@ function topBar(showSearch = false): string {
         </form>
       ` : '<div class="top-bar-left"></div>'}
       <div class="top-bar-right">
-        <button class="lang-toggle" type="button">PT 🇧🇷</button>
         <button class="user-info-mini" data-view="perfil" type="button">
-          <div class="avatar-placeholder-mini"><i class="fa-solid fa-user"></i></div>
-          <span>Perfil</span>
+          ${profileAvatar}
+          <span>${html(profileName)}</span>
         </button>
         <div class="notif-wrapper">
           <button class="notif-btn" data-action="toggle-notifications" type="button">
@@ -370,11 +383,16 @@ function favoritosView(items: Favorite[] = []): string {
 }
 
 function perfilView(data?: ProfileData): string {
+  const nome = [data?.first_name, data?.last_name].filter(Boolean).join(' ') || data?.username || 'Meu perfil'
+  const avatar = data?.foto_perfil_url
+    ? `<img src="${html(data.foto_perfil_url)}" alt="${html(nome)}" class="profile-large-avatar">`
+    : '<div class="avatar-placeholder-large"><i class="fa-solid fa-user"></i></div>'
+
   return layout(`
     <div class="page-content-wrapper">
       <div class="user-profile-header">
-        <div class="avatar-placeholder-large"><i class="fa-solid fa-user"></i></div>
-        <div class="user-profile-info"><h2>Meu perfil</h2><p>Meus livros para troca</p></div>
+        ${avatar}
+        <div class="user-profile-info"><h2>${html(nome)}</h2><p>${html(data?.cidade || 'Meus livros para troca')}</p></div>
       </div>
       <div class="user-books-section">
         ${slider('Meus livros', data?.meus_livros || [])}
@@ -454,10 +472,18 @@ function detalheView(book: Book): string {
 }
 
 function settingsView(data?: SettingsData): string {
+  const avatar = data?.foto_perfil_url
+    ? `<img src="${html(data.foto_perfil_url)}" alt="${html(data.username || 'Foto de perfil')}" class="profile-large-avatar">`
+    : '<div class="avatar-placeholder-large"><i class="fa-solid fa-user"></i></div>'
+
   return layout(`
     <div class="page-content-wrapper">
       <h2 class="section-title">Configurações</h2>
       <form class="form-card" data-form="settings">
+        <div class="user-profile-header">
+          ${avatar}
+          <div class="user-profile-info"><h2>${html(data?.username || 'Perfil')}</h2><p>Foto e dados da conta</p></div>
+        </div>
         <label>Usuário<input name="username" required value="${html(data?.username || '')}"></label>
         <div class="form-row">
           <label>Nome<input name="first_name" value="${html(data?.first_name || '')}"></label>
@@ -497,7 +523,7 @@ async function render(nextView: View): Promise<void> {
   }
 
   app.innerHTML = layout('<div class="page-content-wrapper"><p class="empty-msg">Carregando...</p></div>')
-  await loadNotifications()
+  await Promise.all([loadNotifications(), loadCurrentUser()])
 
   try {
     if (view === 'home') {
@@ -645,7 +671,7 @@ app.addEventListener('submit', async (event) => {
       const data = formObject(form)
       const response = await api('/senha/recuperar/', { method: 'POST', body: { email: data.email, frontend_url: location.origin } })
       if (response.status !== 'success') throw new Error(response.message || errorsToText(response.errors))
-      setNotice(response.message || 'Verifique seu e-mail.', 'success')
+      setNotice(response.message || 'Se o e-mail estiver cadastrado, o link aparece no terminal local ou chega por SMTP configurado.', 'success')
       await render('senha')
     } else if (formName === 'reset-password') {
       const data = formObject(form)
