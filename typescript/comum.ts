@@ -20,6 +20,7 @@ type Book = {
   dono_foto_perfil_url?: string | null;
   is_owner?: boolean;
   meu_interesse?: string | null;
+  meu_desejo_futuro?: boolean;
 };
 type HomeData = {
   latest_books: Book[];
@@ -37,6 +38,13 @@ type ProfileData = {
 type Favorite = {
   id: number;
   status_interesse: string;
+  livro_id: number;
+  livro_titulo: string;
+  livro_autor: string;
+  livro_capa_url?: string | null;
+};
+type FutureWish = {
+  id: number;
   livro_id: number;
   livro_titulo: string;
   livro_autor: string;
@@ -202,7 +210,7 @@ function montarTopBarRight(): void {
 function montarSidebar(): void {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
-  sidebar.innerHTML = `<div class="sidebar-inner"><div class="sidebar-brand"><i class="fa-solid fa-book"></i></div><div class="sidebar-sep"></div><nav class="sidebar-nav"><a class="sidebar-link" href="home.html" aria-label="Início"><i class="fa-solid fa-house sidebar-icon"></i></a><a class="sidebar-link" href="favoritos.html" aria-label="Favoritos"><i class="fa-solid fa-heart sidebar-icon"></i></a><a class="sidebar-link" href="perfil.html" aria-label="Perfil"><i class="fa-solid fa-user sidebar-icon"></i></a><a class="sidebar-link" href="adicionar_livro.html" aria-label="Adicionar livro"><i class="fa-solid fa-plus sidebar-icon"></i></a><a class="sidebar-link" href="configuracoes.html" aria-label="Configurações"><i class="fa-solid fa-gear sidebar-icon"></i></a></nav></div>`;
+  sidebar.innerHTML = `<div class="sidebar-inner"><div class="sidebar-brand"><i class="fa-solid fa-book"></i></div><div class="sidebar-sep"></div><nav class="sidebar-nav"><a class="sidebar-link" href="home.html" aria-label="Início"><i class="fa-solid fa-house sidebar-icon"></i></a><a class="sidebar-link" href="favoritos.html" aria-label="Interesses"><i class="fa-solid fa-handshake-angle sidebar-icon"></i></a><a class="sidebar-link" href="desejos_futuros.html" aria-label="Desejos futuros"><i class="fa-solid fa-bookmark sidebar-icon"></i></a><a class="sidebar-link" href="perfil.html" aria-label="Perfil"><i class="fa-solid fa-user sidebar-icon"></i></a><a class="sidebar-link" href="adicionar_livro.html" aria-label="Adicionar livro"><i class="fa-solid fa-plus sidebar-icon"></i></a><a class="sidebar-link" href="configuracoes.html" aria-label="Configurações"><i class="fa-solid fa-gear sidebar-icon"></i></a></nav></div>`;
 }
 async function atualizarTopo(): Promise<void> {
   const perfil = await api<SettingsData>('/configuracoes/');

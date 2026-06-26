@@ -23,23 +23,22 @@
     <link rel="stylesheet" href="css/books.css?v=20260626-7" />
     <link rel="stylesheet" href="css/auth.css" />
   </head>
-  <body class="auth-only-layout">
-    <main class="app-content">
-      <div id="mensagem" class="toast-container"></div>
-      <div class="auth-shell">
-        <div class="auth-copy">
-          <p class="auth-kicker">Gerência de senha</p>
-          <h1>Recuperar senha</h1>
-          <p>Informe o e-mail cadastrado para receber um link de redefinição.</p>
-        </div>
-        <form class="auth-card" id="formRecuperarSenha">
-          <label>Email<input name="email" type="email" required /></label
-          ><button class="btn-primary-full" type="submit">Solicitar recuperação</button>
-          <div class="auth-links"><a class="btn-as-link" href="index.html">Voltar ao login</a></div>
-        </form>
-      </div>
-    </main>
+  <body>
+    <div class="app-layout">
+      <aside class="sidebar" id="sidebar"></aside>
+      <main class="app-content">
+        <header class="top-bar">
+          <form class="search-box" id="formBusca">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="q" id="q" placeholder="Pesquisar livro, nome, autor..." />
+          </form>
+          <div class="top-bar-right" id="topBarRight"></div>
+        </header>
+        <div id="mensagem" class="toast-container"></div>
+        <div class="page-content-wrapper"><div id="listaDesejosFuturos"></div></div>
+      </main>
+    </div>
     <script src="javascript/comum.js?v=20260626-3"></script>
-    <script src="javascript/recuperar_senha.js?v=20260626-1"></script>
+    <script src="javascript/desejos_futuros.js?v=20260626-1"></script>
   </body>
 </html>

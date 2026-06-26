@@ -21,14 +21,21 @@ function textoEstadoLivro(valor) {
 }
 function atualizarAcoesDetalhe(livro) {
     const acoes = document.getElementById('detalheAcoes');
-    if (livro.is_owner)
+    if (livro.is_owner) {
         acoes.innerHTML = `<button class="btn-blue-action" id="editar" type="button">Editar livro</button><button class="btn-danger-action" id="excluir" type="button">Excluir livro</button>`;
-    else if (livro.meu_interesse)
-        acoes.innerHTML = `<button class="btn-danger-action" id="removerInteresse" type="button">Não tenho mais interesse</button>`;
-    else if (livro.status === 'disponivel' && livro.disponivel !== false)
-        acoes.innerHTML = `<button class="btn-blue-action" id="tenhoInteresse" type="button">Tenho interesse</button>`;
-    else
-        acoes.innerHTML = '';
+        return;
+    }
+    const botoes = [];
+    if (livro.meu_interesse) {
+        botoes.push(`<button class="btn-danger-action" id="removerInteresse" type="button">Não tenho mais interesse</button>`);
+    }
+    else if (livro.status === 'disponivel' && livro.disponivel !== false) {
+        botoes.push(`<button class="btn-blue-action" id="tenhoInteresse" type="button">Tenho interesse</button>`);
+    }
+    botoes.push(livro.meu_desejo_futuro
+        ? `<button class="btn-secondary-action" id="removerDesejoFuturo" type="button">Remover desejo futuro</button>`
+        : `<button class="btn-secondary-action" id="desejoFuturo" type="button">Desejo futuro</button>`);
+    acoes.innerHTML = botoes.join('');
 }
 async function carregarDetalhe() {
     const resposta = await api(`/livro/${id}/`);
@@ -107,6 +114,36 @@ document.addEventListener('click', async (evento) => {
             mostrarMensagem(resposta.message || 'Não foi possível remover o interesse.', 'error');
         }
         acaoInteresseEmAndamento = false;
+    }
+    if (alvo.id === 'desejoFuturo') {
+        const botao = alvo;
+        botao.disabled = true;
+        botao.textContent = 'Salvando...';
+        const resposta = await api(`/livro/${livroAtual.id}/desejo-futuro/`, { method: 'POST' });
+        if (resposta.status === 'success' || resposta.status === 'info') {
+            livroAtual = { ...livroAtual, meu_desejo_futuro: true };
+            atualizarAcoesDetalhe(livroAtual);
+        }
+        else {
+            botao.disabled = false;
+            botao.textContent = 'Desejo futuro';
+            mostrarMensagem(resposta.message || 'Não foi possível salvar o desejo futuro.', 'error');
+        }
+    }
+    if (alvo.id === 'removerDesejoFuturo') {
+        const botao = alvo;
+        botao.disabled = true;
+        botao.textContent = 'Removendo...';
+        const resposta = await api(`/livro/${livroAtual.id}/desejo-futuro/excluir/`, { method: 'DELETE' });
+        if (resposta.status === 'success') {
+            livroAtual = { ...livroAtual, meu_desejo_futuro: false };
+            atualizarAcoesDetalhe(livroAtual);
+        }
+        else {
+            botao.disabled = false;
+            botao.textContent = 'Remover desejo futuro';
+            mostrarMensagem(resposta.message || 'Não foi possível remover o desejo futuro.', 'error');
+        }
     }
 });
 void carregarDetalhe();

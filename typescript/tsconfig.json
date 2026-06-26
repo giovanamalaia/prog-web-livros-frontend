@@ -18,6 +18,7 @@
     "confirmar_senha.ts",
     "home.ts",
     "favoritos.ts",
+    "desejos_futuros.ts",
     "perfil.ts",
     "adicionar_livro.ts",
     "detalhe_livro.ts",

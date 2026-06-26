@@ -1,6 +1,7 @@
 .btn,
 .btn-blue,
 .btn-blue-action,
+.btn-secondary-action,
 .btn-submit,
 .btn-secondary,
 .btn-danger-action,
@@ -52,6 +53,7 @@
 }
 
 .btn-secondary,
+.btn-secondary-action,
 .btn-notif-decline {
     background-color: transparent;
     color: var(--color-text);
@@ -59,6 +61,7 @@
 }
 
 .btn-secondary:hover,
+.btn-secondary-action:hover,
 .btn-notif-decline:hover {
     background-color: rgba(17, 17, 17, 0.06);
 }
@@ -73,6 +76,7 @@
 }
 
 .btn-blue-action,
+.btn-secondary-action,
 .btn-danger-action {
     min-width: 160px;
     text-align: center;
@@ -80,6 +84,7 @@
 
 .btn-blue-action:disabled,
 .btn-secondary:disabled,
+.btn-secondary-action:disabled,
 .btn-danger-action:disabled {
     cursor: wait;
     opacity: 0.7;
