@@ -1,6 +1,7 @@
 exigirLogin();
 configurarTopo();
 
+// busca os desejos futuros do usuário e exibe em um slider
 async function carregarDesejosFuturos(): Promise<void> {
   const q = (document.getElementById('q') as HTMLInputElement | null)?.value || '';
   const resposta = await api<FutureWish[]>(`/desejos-futuros/${q ? `?q=${encodeURIComponent(q)}` : ''}`);
@@ -17,6 +18,7 @@ async function carregarDesejosFuturos(): Promise<void> {
   );
 }
 
+// filtra os desejos futuros ao enviar a busca
 document.getElementById('formBusca')?.addEventListener('submit', (evento) => {
   evento.preventDefault();
   void carregarDesejosFuturos();

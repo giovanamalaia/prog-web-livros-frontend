@@ -1,5 +1,6 @@
 exigirLogin();
 configurarTopo();
+// preenche o formulário com os dados atuais do usuário
 async function carregarConfiguracoes(): Promise<void> {
   const resposta = await api<SettingsData>('/configuracoes/');
   if (resposta.status !== 'success' || !resposta.data) return;
@@ -19,6 +20,7 @@ async function carregarConfiguracoes(): Promise<void> {
     d.cidade || '',
   );
 }
+// salva as configurações e recarrega os dados após o envio
 document.getElementById('formConfiguracoes')?.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const form = evento.target as HTMLFormElement;
@@ -33,6 +35,7 @@ document.getElementById('formConfiguracoes')?.addEventListener('submit', async (
   if (resposta.status === 'success') await carregarConfiguracoes();
 });
 const fotoPerfilInput = document.getElementById('fotoPerfil') as HTMLInputElement | null;
+// mostra a prévia da foto antes de enviar
 fotoPerfilInput?.addEventListener('change', () => {
   const file = fotoPerfilInput.files?.[0];
   if (!file) return;
@@ -40,6 +43,7 @@ fotoPerfilInput?.addEventListener('change', () => {
   (document.getElementById('fotoConfiguracoes') as HTMLElement).outerHTML =
     `<img src="${url}" class="profile-large-avatar" id="fotoConfiguracoes" alt="Prévia" />`;
 });
+// solicita ao backend o envio do email de redefinição de senha
 document.getElementById('botaoRedefinirSenha')?.addEventListener('click', async () => {
   const botao = document.getElementById('botaoRedefinirSenha') as HTMLButtonElement;
   botao.disabled = true;

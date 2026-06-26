@@ -15,6 +15,14 @@ Frontend do projeto **Livro**, uma plataforma de troca de livros entre usuarios.
 - Site do backend/API: adicionar link publicado
 - Swagger do backend: adicionar link publicado para `/swagger/`
 
+## Screenshots
+
+![Tela de login](docs/screenshots/login.png)
+
+![Perfil do usuário](docs/screenshots/perfil.png)
+
+![Adicionar livro](docs/screenshots/adicionar-livro.png)
+
 ## Escopo do projeto
 
 O frontend permite que o usuario navegue pelo catalogo de livros, cadastre livros para troca, edite seu perfil, demonstre interesse em livros de outras pessoas, acompanhe notificacoes e mantenha uma lista de desejos futuros.
@@ -97,7 +105,7 @@ http://127.0.0.1:8000/api
 9. Em Perfil, veja seus livros e adicione novos.
 10. Em Configuracoes, altere dados, foto, localizacao e solicite redefinicao de senha.
 
-## Relacao com a lista implementada
+## Novas Implementacoes
 
 - Lista de desejos futuros: implementada na pagina **Desejos futuros**.
 - Interesses reais de troca: implementados na pagina **Seus interesses**.

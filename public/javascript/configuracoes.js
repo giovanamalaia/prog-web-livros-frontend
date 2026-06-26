@@ -2,6 +2,7 @@
 var _a, _b;
 exigirLogin();
 configurarTopo();
+// preenche o formulário com os dados atuais do usuário
 async function carregarConfiguracoes() {
     const resposta = await api('/configuracoes/');
     if (resposta.status !== 'success' || !resposta.data)
@@ -17,6 +18,7 @@ async function carregarConfiguracoes() {
             `<img src="${html(mediaUrl(d.foto_perfil_url))}" class="profile-large-avatar" id="fotoConfiguracoes" alt="${html(d.username)}">`;
     await carregarCidades(document.getElementById('estado'), document.getElementById('cidade'), d.estado || '', d.cidade || '');
 }
+// salva as configurações e recarrega os dados após o envio
 (_a = document.getElementById('formConfiguracoes')) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     const form = evento.target;
@@ -30,13 +32,17 @@ async function carregarConfiguracoes() {
         await carregarConfiguracoes();
 });
 const fotoPerfilInput = document.getElementById('fotoPerfil');
+// mostra a prévia da foto antes de enviar
 fotoPerfilInput === null || fotoPerfilInput === void 0 ? void 0 : fotoPerfilInput.addEventListener('change', () => {
-    const file = fotoPerfilInput.files?.[0];
-    if (!file) return;
+    var _a;
+    const file = (_a = fotoPerfilInput.files) === null || _a === void 0 ? void 0 : _a[0];
+    if (!file)
+        return;
     const url = URL.createObjectURL(file);
     document.getElementById('fotoConfiguracoes').outerHTML =
         `<img src="${url}" class="profile-large-avatar" id="fotoConfiguracoes" alt="Prévia" />`;
 });
+// solicita ao backend o envio do email de redefinição de senha
 (_b = document.getElementById('botaoRedefinirSenha')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', async () => {
     const botao = document.getElementById('botaoRedefinirSenha');
     botao.disabled = true;

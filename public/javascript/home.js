@@ -2,6 +2,7 @@
 var _a, _b;
 exigirLogin();
 configurarTopo();
+// salva a posição de scroll atual de cada slider antes de recarregar
 function scrollSlidersAtuais(conteudo) {
     const scrolls = new Map();
     conteudo.querySelectorAll('.book-slider-section').forEach((section) => {
@@ -13,6 +14,7 @@ function scrollSlidersAtuais(conteudo) {
     });
     return scrolls;
 }
+// restaura a posição de scroll dos sliders após recarregar o conteúdo
 function restaurarScrollSliders(conteudo, scrolls) {
     conteudo.querySelectorAll('.book-slider-section').forEach((section) => {
         var _a;
@@ -23,6 +25,7 @@ function restaurarScrollSliders(conteudo, scrolls) {
             container.scrollLeft = scrollLeft;
     });
 }
+// busca os livros da home e renderiza os sliders
 async function carregarHome() {
     var _a, _b;
     const q = ((_a = document.getElementById('q')) === null || _a === void 0 ? void 0 : _a.value) || '';
@@ -42,6 +45,7 @@ async function carregarHome() {
     void carregarHome();
 });
 let debounceTimer;
+// aguarda o usuário parar de digitar antes de buscar
 (_b = document.getElementById('q')) === null || _b === void 0 ? void 0 : _b.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => void carregarHome(), 400);

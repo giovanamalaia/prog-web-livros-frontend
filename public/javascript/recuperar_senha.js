@@ -1,5 +1,6 @@
 "use strict";
 var _a;
+// envia o email para o backend solicitar o link de recuperação de senha
 (_a = document.getElementById('formRecuperarSenha')) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     const form = evento.target;

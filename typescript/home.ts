@@ -1,6 +1,7 @@
 exigirLogin();
 configurarTopo();
 
+// salva a posição de scroll atual de cada slider antes de recarregar
 function scrollSlidersAtuais(conteudo: HTMLElement): Map<string, number> {
   const scrolls = new Map<string, number>();
   conteudo.querySelectorAll<HTMLElement>('.book-slider-section').forEach((section) => {
@@ -11,6 +12,7 @@ function scrollSlidersAtuais(conteudo: HTMLElement): Map<string, number> {
   return scrolls;
 }
 
+// restaura a posição de scroll dos sliders após recarregar o conteúdo
 function restaurarScrollSliders(conteudo: HTMLElement, scrolls: Map<string, number>): void {
   conteudo.querySelectorAll<HTMLElement>('.book-slider-section').forEach((section) => {
     const titulo = section.querySelector('h3')?.textContent || '';
@@ -20,6 +22,7 @@ function restaurarScrollSliders(conteudo: HTMLElement, scrolls: Map<string, numb
   });
 }
 
+// busca os livros da home e renderiza os sliders
 async function carregarHome(): Promise<void> {
   const q = (document.getElementById('q') as HTMLInputElement | null)?.value || '';
   const resposta = await api<HomeData>(`/home/${q ? `?q=${encodeURIComponent(q)}` : ''}`);
@@ -38,6 +41,7 @@ document.getElementById('formBusca')?.addEventListener('submit', (evento) => {
   void carregarHome();
 });
 let debounceTimer: ReturnType<typeof setTimeout>;
+// aguarda o usuário parar de digitar antes de buscar
 document.getElementById('q')?.addEventListener('input', () => {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => void carregarHome(), 400);

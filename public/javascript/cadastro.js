@@ -1,10 +1,12 @@
 "use strict";
 var _a;
+// carrega os selects de estado e cidade ao abrir a página
 window.onload = async () => {
     const estado = document.getElementById('estado');
     const cidade = document.getElementById('cidade');
     await carregarCidades(estado, cidade);
 };
+// envia o formulário de cadastro e redireciona para a home em caso de sucesso
 (_a = document.getElementById('formCadastro')) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     const form = evento.target;

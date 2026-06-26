@@ -10,6 +10,7 @@ type PublicProfileData = {
   meus_livros?: Book[];
   livros?: Book[];
 };
+// busca os dados públicos de outro usuário pelo id na url
 async function carregarPerfilPublico(): Promise<void> {
   if (!donoId) {
     location.href = 'home.html';
@@ -29,5 +30,6 @@ async function carregarPerfilPublico(): Promise<void> {
     livros,
   );
 }
+// volta para a página de origem
 document.getElementById('botaoVoltarPublico')?.addEventListener('click', () => (location.href = nextPerfilPublico));
 void carregarPerfilPublico();

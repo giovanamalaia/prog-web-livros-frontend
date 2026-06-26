@@ -1,3 +1,4 @@
+// envia o email para o backend solicitar o link de recuperação de senha
 document.getElementById('formRecuperarSenha')?.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const form = evento.target as HTMLFormElement;

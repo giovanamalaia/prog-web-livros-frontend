@@ -1,5 +1,6 @@
 exigirLogin();
 configurarTopo();
+// busca os interesses de troca do usuário e exibe em um slider
 async function carregarFavoritos(): Promise<void> {
   const q = (document.getElementById('q') as HTMLInputElement | null)?.value || '';
   const resposta = await api<Favorite[]>(`/favoritos/${q ? `?q=${encodeURIComponent(q)}` : ''}`);
@@ -16,6 +17,7 @@ async function carregarFavoritos(): Promise<void> {
     })),
   );
 }
+// filtra os interesses ao enviar a busca
 document.getElementById('formBusca')?.addEventListener('submit', (evento) => {
   evento.preventDefault();
   void carregarFavoritos();

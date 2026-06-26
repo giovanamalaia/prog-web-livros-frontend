@@ -1,3 +1,4 @@
+// confirma a nova senha usando o uid e token que vieram na url do email
 document.getElementById('formConfirmarSenha')?.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const params = new URLSearchParams(location.search);

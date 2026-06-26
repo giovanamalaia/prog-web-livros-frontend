@@ -1,5 +1,6 @@
 "use strict";
 var _a;
+// confirma a nova senha usando o uid e token que vieram na url do email
 (_a = document.getElementById('formConfirmarSenha')) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     const params = new URLSearchParams(location.search);

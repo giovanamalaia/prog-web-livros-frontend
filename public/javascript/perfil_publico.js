@@ -5,6 +5,7 @@ configurarTopo();
 const paramsPerfilPublico = new URLSearchParams(location.search);
 const donoId = paramsPerfilPublico.get('id');
 const nextPerfilPublico = paramsPerfilPublico.get('next') || 'home.html';
+// busca os dados públicos de outro usuário pelo id na url
 async function carregarPerfilPublico() {
     var _a, _b;
     if (!donoId) {
@@ -23,5 +24,6 @@ async function carregarPerfilPublico() {
     const livros = (_b = (_a = dados.meus_livros) !== null && _a !== void 0 ? _a : dados.livros) !== null && _b !== void 0 ? _b : [];
     document.getElementById('livrosPerfilPublico').innerHTML = slider(`Livros de ${html(nome)}`, livros);
 }
+// volta para a página de origem
 (_a = document.getElementById('botaoVoltarPublico')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => (location.href = nextPerfilPublico));
 void carregarPerfilPublico();

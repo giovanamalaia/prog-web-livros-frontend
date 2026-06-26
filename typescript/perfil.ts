@@ -1,5 +1,6 @@
 exigirLogin();
 configurarTopo();
+// busca os dados do perfil e lista os livros do usuário
 async function carregarPerfil(): Promise<void> {
   const resposta = await api<ProfileData>('/perfil/');
   if (resposta.status !== 'success' || !resposta.data) return;
@@ -12,6 +13,7 @@ async function carregarPerfil(): Promise<void> {
       `<img src="${html(mediaUrl(dados.foto_perfil_url))}" class="profile-large-avatar" id="fotoPerfil" alt="${html(nome)}">`;
   (document.getElementById('meusLivros') as HTMLDivElement).innerHTML = slider('Meus livros', dados.meus_livros);
 }
+// redireciona para o formulário de novo livro
 document
   .getElementById('botaoAdicionarLivro')
   ?.addEventListener('click', () => (location.href = 'adicionar_livro.html'));

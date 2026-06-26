@@ -2,6 +2,7 @@
 var _a;
 exigirLogin();
 configurarTopo();
+// busca os interesses de troca do usuário e exibe em um slider
 async function carregarFavoritos() {
     var _a;
     const q = ((_a = document.getElementById('q')) === null || _a === void 0 ? void 0 : _a.value) || '';
@@ -16,6 +17,7 @@ async function carregarFavoritos() {
         status: i.status_interesse,
     })));
 }
+// filtra os interesses ao enviar a busca
 (_a = document.getElementById('formBusca')) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', (evento) => {
     evento.preventDefault();
     void carregarFavoritos();

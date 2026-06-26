@@ -1,8 +1,13 @@
 "use strict";
-const backendAddress = 'http://127.0.0.1:8000/api';
+// aponta para o backend local em desenvolvimento ou para o publicado em produção
+const backendAddress = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+    ? 'http://127.0.0.1:8000/api'
+    : 'https://SEU-BACKEND-PUBLICADO.com/api';
 const backendBase = backendAddress.replace(/\/api$/, '');
+// chave usada para marcar no localStorage que o usuário está logado
 const AUTH_KEY = 'livro_auth';
 let csrfReady = false;
+// lista de siglas de estados brasileiros
 const estados = [
     'AC',
     'AL',
@@ -32,6 +37,7 @@ const estados = [
     'SE',
     'TO',
 ];
+// pares de [valor de banco, rótulo legível] para os gêneros de livros
 const generos = [
     ['ficcao_geral', 'Ficção Geral'],
     ['nao_ficcao_geral', 'Não Ficção Geral'],
@@ -56,6 +62,7 @@ const generos = [
     ['teatro', 'Teatro'],
     ['outros', 'Outros'],
 ];
+// escapa caracteres especiais para exibir texto no html com segurança
 function html(valor) {
     return String(valor !== null && valor !== void 0 ? valor : '')
         .replace(/&/g, '&amp;')
@@ -64,6 +71,7 @@ function html(valor) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
 }
+// monta a url completa de uma imagem hospedada no backend
 function mediaUrl(url) {
     if (!url)
         return '';
@@ -71,11 +79,13 @@ function mediaUrl(url) {
         return url;
     return `${backendBase}${url.startsWith('/') ? url : `/${url}`}`;
 }
+// lê um cookie pelo nome
 function cookie(nome) {
     var _a;
     const partes = `; ${document.cookie}`.split(`; ${nome}=`);
     return partes.length === 2 ? decodeURIComponent(((_a = partes.pop()) === null || _a === void 0 ? void 0 : _a.split(';').shift()) || '') : '';
 }
+// converte os campos de um formulário em um objeto simples
 function formObject(form) {
     const data = {};
     const elements = form.elements;
@@ -86,6 +96,7 @@ function formObject(form) {
     }
     return data;
 }
+// transforma os erros de validação da api em texto legível
 function errorsToText(errors) {
     if (!errors)
         return '';
@@ -93,22 +104,26 @@ function errorsToText(errors) {
         .map(([campo, mensagens]) => `${campo}: ${mensagens.join(', ')}`)
         .join(' ');
 }
+// exibe uma mensagem de feedback na div#mensagem da página
 function mostrarMensagem(texto = '', tipo = 'info') {
     const caixa = document.getElementById('mensagem');
     if (!caixa)
         return;
     caixa.innerHTML = texto ? `<div class="toast-message ${tipo}">${html(texto)}</div>` : '';
 }
+// redireciona para a página inicial se o usuário não estiver logado
 function exigirLogin() {
     if (localStorage.getItem(AUTH_KEY) !== '1')
         location.href = 'index.html';
 }
+// garante que o cookie csrftoken está disponível antes de chamadas que modificam dados
 async function ensureCsrf() {
     if (csrfReady)
         return;
     await fetch(`${backendAddress}/csrf/`, { credentials: 'include' });
     csrfReady = true;
 }
+// envia uma requisição ao backend e devolve o json da resposta
 async function api(path, options = {}) {
     const method = options.method || 'GET';
     const headers = new Headers();
@@ -135,29 +150,35 @@ async function api(path, options = {}) {
         return { status: 'error', message: 'Não consegui conectar ao backend.' };
     }
 }
+// retorna o html da capa de um livro, ou um placeholder se não tiver capa
 function capaLivro(livro) {
     return livro.capa_url
         ? `<img src="${html(mediaUrl(livro.capa_url))}" alt="${html(livro.titulo)}">`
         : '<div class="placeholder-capa">Sem capa</div>';
 }
+// monta o html do card de um livro para uso nos sliders
 function cardLivro(livro) {
     return `<a class="book-card" href="detalhe_livro.html?id=${livro.id}&next=${encodeURIComponent(location.pathname.split('/').pop() || 'home.html')}" style="text-decoration:none;color:inherit;display:block;"><span class="book-cover-wrapper">${capaLivro(livro)}</span><span class="book-title">${html(livro.titulo)}</span><span class="book-author">${html(livro.autor)}</span></a>`;
 }
+// monta uma seção de slider com título e lista de cards de livros
 function slider(titulo, livros) {
     return `<div class="book-slider-section"><div class="slider-header"><h3>${html(titulo)}</h3></div><div class="slider-container">${livros.length ? livros.map(cardLivro).join('') : '<p class="empty-msg">Nenhum livro encontrado nesta seção.</p>'}</div></div>`;
 }
+// injeta o html da barra do topo com perfil, notificações e botão de sair
 function montarTopBarRight() {
     const container = document.getElementById('topBarRight');
     if (!container)
         return;
     container.innerHTML = `<button class="user-info-mini" id="linkPerfil" type="button"><span id="topAvatar" class="avatar-placeholder-mini"><i class="fa-solid fa-user"></i></span><span id="topUsername">Perfil</span></button><div class="notif-wrapper"><button class="notif-btn" id="botaoNotificacoes" type="button"><i class="fa-regular fa-bell bell-icon"></i><span class="notif-badge" id="notifBadge" hidden>0</span></button><div class="notif-dropdown" id="notifDropdown" hidden><h4>Notificações</h4><div class="notif-items-container" id="notificacoesLista"></div></div></div><button class="top-bar-sair" id="botaoSair" type="button"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>`;
 }
+// injeta o html da barra lateral com os links de navegação
 function montarSidebar() {
     const sidebar = document.getElementById('sidebar');
     if (!sidebar)
         return;
     sidebar.innerHTML = `<div class="sidebar-inner"><div class="sidebar-brand"><i class="fa-solid fa-book"></i></div><div class="sidebar-sep"></div><nav class="sidebar-nav"><a class="sidebar-link" href="home.html" aria-label="Início"><i class="fa-solid fa-house sidebar-icon"></i></a><a class="sidebar-link" href="favoritos.html" aria-label="Interesses"><i class="fa-solid fa-handshake-angle sidebar-icon"></i></a><a class="sidebar-link" href="desejos_futuros.html" aria-label="Desejos futuros"><i class="fa-solid fa-bookmark sidebar-icon"></i></a><a class="sidebar-link" href="perfil.html" aria-label="Perfil"><i class="fa-solid fa-user sidebar-icon"></i></a><a class="sidebar-link" href="adicionar_livro.html" aria-label="Adicionar livro"><i class="fa-solid fa-plus sidebar-icon"></i></a><a class="sidebar-link" href="configuracoes.html" aria-label="Configurações"><i class="fa-solid fa-gear sidebar-icon"></i></a></nav></div>`;
 }
+// busca dados do perfil e notificações e atualiza o topo da página
 async function atualizarTopo() {
     const perfil = await api('/configuracoes/');
     if (perfil.status === 'success' && perfil.data) {
@@ -185,6 +206,7 @@ async function atualizarTopo() {
             : '<div class="notif-empty">Nenhuma solicitação de troca no momento.</div>';
     }
 }
+// alterna a visibilidade do painel de notificações
 function abrirOuFecharNotificacoes() {
     const painel = document.getElementById('notifDropdown');
     if (!painel)
@@ -195,6 +217,7 @@ function abrirOuFecharNotificacoes() {
     if (vaiAbrir)
         void atualizarTopo();
 }
+// inicializa o topo e a sidebar e registra os eventos de clique
 function configurarTopo() {
     var _a, _b, _c;
     montarTopBarRight();
@@ -233,6 +256,7 @@ function configurarTopo() {
         void atualizarTopo();
     }, 1000);
 }
+// preenche os selects de estado e cidade com os dados do ibge
 async function carregarCidades(estadoSelect, cidadeSelect, estadoAtual = '', cidadeAtual = '') {
     const resposta = await fetch('ibge_cidades.json');
     const dados = (await resposta.json());

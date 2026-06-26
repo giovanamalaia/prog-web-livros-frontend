@@ -7,10 +7,12 @@ const id = paramsDetalheLivro.get('id');
 const next = paramsDetalheLivro.get('next') || 'home.html';
 let livroAtual = null;
 let acaoInteresseEmAndamento = false;
+// converte o código do gênero no rótulo legível
 function textoGenero(valor) {
     var _a;
     return ((_a = generos.find(([codigo]) => codigo === valor)) === null || _a === void 0 ? void 0 : _a[1]) || valor || '';
 }
+// converte o código do estado de conservação no rótulo legível
 function textoEstadoLivro(valor) {
     const estadosLivro = {
         SN: 'Semi-novo',
@@ -19,6 +21,7 @@ function textoEstadoLivro(valor) {
     };
     return valor ? estadosLivro[valor] || valor : '';
 }
+// renderiza os botões de ação conforme se o usuário é o dono ou não
 function atualizarAcoesDetalhe(livro) {
     const acoes = document.getElementById('detalheAcoes');
     if (livro.is_owner) {
@@ -37,6 +40,7 @@ function atualizarAcoesDetalhe(livro) {
         : `<button class="btn-secondary-action" id="desejoFuturo" type="button">Desejo futuro</button>`);
     acoes.innerHTML = botoes.join('');
 }
+// busca os dados do livro e preenche a página
 async function carregarDetalhe() {
     const resposta = await api(`/livro/${id}/`);
     if (resposta.status !== 'success' || !resposta.data)
@@ -61,6 +65,7 @@ async function carregarDetalhe() {
     atualizarAcoesDetalhe(livro);
 }
 (_a = document.getElementById('botaoVoltar')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => (location.href = next));
+// trata os cliques nos botões de excluir, editar, interesse e desejo futuro
 document.addEventListener('click', async (evento) => {
     const alvo = evento.target;
     if (!livroAtual)
