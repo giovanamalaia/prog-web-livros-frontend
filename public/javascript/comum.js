@@ -66,10 +66,49 @@ async function atualizarTopo() { const perfil = await api('/configuracoes/'); if
 } if (lista) {
     lista.innerHTML = dados.length ? dados.map(n => `<div class="notif-item"><div class="notif-avatar">${html(n.usuario_nome).slice(0, 2).toUpperCase()}</div><div class="notif-body"><div class="notif-text"><strong>${html(n.usuario_nome)}</strong> tem interesse no seu livro <strong>${html(n.livro_titulo)}</strong>.</div><div class="notif-actions"><button class="btn-notif-accept" data-accept="${n.id}" type="button">Aceitar</button><button class="btn-notif-decline" data-decline="${n.id}" type="button">Recusar</button></div></div></div>`).join('') : '<div class="notif-empty">Nenhuma solicitação de troca no momento.</div>';
 } }
-function configurarTopo() { var _a, _b, _c; montarSidebar(); (_a = document.getElementById('linkPerfil')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => location.href = 'perfil.html'); (_b = document.getElementById('botaoSair')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', async () => { await api('/logout/', { method: 'POST' }); localStorage.removeItem(AUTH_KEY); location.href = 'index.html'; }); (_c = document.getElementById('botaoNotificacoes')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', () => { const painel = document.getElementById('notifDropdown'); if (painel)
-    painel.hidden = !painel.hidden; }); document.addEventListener('click', async (evento) => { const alvo = evento.target; const aceitar = alvo.dataset.accept; const recusar = alvo.dataset.decline; if (aceitar || recusar) {
-    const path = aceitar ? `/interesse/${aceitar}/aceitar/` : `/interesse/${recusar}/recusar/`;
-    await api(path, { method: 'POST' });
-    await atualizarTopo();
-} }); void atualizarTopo(); window.setInterval(() => { void atualizarTopo(); }, 1000); }
+function abrirOuFecharNotificacoes() {
+    const painel = document.getElementById('notifDropdown');
+    if (!painel)
+        return;
+    const vaiAbrir = painel.hidden || painel.style.display === 'none' || painel.style.display === '';
+    painel.hidden = !vaiAbrir;
+    painel.style.display = vaiAbrir ? 'block' : 'none';
+    if (vaiAbrir)
+        void atualizarTopo();
+}
+function configurarTopo() {
+    var _a, _b, _c;
+    montarSidebar();
+    (_a = document.getElementById('linkPerfil')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => location.href = 'perfil.html');
+    (_b = document.getElementById('botaoSair')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', async () => {
+        await api('/logout/', { method: 'POST' });
+        localStorage.removeItem(AUTH_KEY);
+        location.href = 'index.html';
+    });
+    (_c = document.getElementById('botaoNotificacoes')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', evento => {
+        evento.preventDefault();
+        evento.stopPropagation();
+        abrirOuFecharNotificacoes();
+    });
+    document.addEventListener('click', async (evento) => {
+        const alvo = evento.target;
+        const aceitar = alvo.dataset.accept;
+        const recusar = alvo.dataset.decline;
+        if (aceitar || recusar) {
+            const path = aceitar ? `/interesse/${aceitar}/aceitar/` : `/interesse/${recusar}/recusar/`;
+            await api(path, { method: 'POST' });
+            await atualizarTopo();
+            return;
+        }
+        if (!alvo.closest('.notif-wrapper')) {
+            const painel = document.getElementById('notifDropdown');
+            if (painel) {
+                painel.hidden = true;
+                painel.style.display = 'none';
+            }
+        }
+    });
+    void atualizarTopo();
+    window.setInterval(() => { void atualizarTopo(); }, 1000);
+}
 async function carregarCidades(estadoSelect, cidadeSelect, estadoAtual = '', cidadeAtual = '') { const resposta = await fetch('ibge_cidades.json'); const dados = await resposta.json(); estadoSelect.innerHTML = '<option value="">Selecione o estado</option>' + estados.map(uf => `<option value="${uf}" ${uf === estadoAtual ? 'selected' : ''}>${uf}</option>`).join(''); function preencherCidade() { var _a; const uf = estadoSelect.value; const cidades = ((_a = dados[uf]) === null || _a === void 0 ? void 0 : _a.cidades) || []; cidadeSelect.innerHTML = '<option value="">Selecione a cidade</option>' + cidades.map(c => `<option value="${html(c)}" ${c === cidadeAtual ? 'selected' : ''}>${html(c)}</option>`).join(''); } estadoSelect.addEventListener('change', preencherCidade); preencherCidade(); }

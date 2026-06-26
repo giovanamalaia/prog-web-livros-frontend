@@ -38,5 +38,47 @@ function cardLivro(livro: Book): string { return `<a class="book-card" href="det
 function slider(titulo: string, livros: Book[]): string { return `<div class="book-slider-section"><div class="slider-header"><h3>${html(titulo)}</h3></div><div class="slider-container">${livros.length ? livros.map(cardLivro).join('') : '<p class="empty-msg">Nenhum livro encontrado nesta seção.</p>'}</div></div>`; }
 function montarSidebar(): void { const sidebar = document.getElementById('sidebar'); if (!sidebar) return; sidebar.innerHTML = `<div class="sidebar-inner"><div class="sidebar-brand"><i class="fa-solid fa-book"></i></div><div class="sidebar-sep"></div><nav class="sidebar-nav"><a class="sidebar-link" href="home.html" aria-label="Início"><i class="fa-solid fa-house sidebar-icon"></i></a><a class="sidebar-link" href="favoritos.html" aria-label="Favoritos"><i class="fa-solid fa-heart sidebar-icon"></i></a><a class="sidebar-link" href="perfil.html" aria-label="Perfil"><i class="fa-solid fa-user sidebar-icon"></i></a><a class="sidebar-link" href="adicionar_livro.html" aria-label="Adicionar livro"><i class="fa-solid fa-plus sidebar-icon"></i></a><a class="sidebar-link" href="configuracoes.html" aria-label="Configurações"><i class="fa-solid fa-gear sidebar-icon"></i></a></nav></div>`; }
 async function atualizarTopo(): Promise<void> { const perfil = await api<SettingsData>('/configuracoes/'); if (perfil.status === 'success' && perfil.data) { const nome = perfil.data.first_name || perfil.data.username; const nomeEl = document.getElementById('topUsername'); if (nomeEl) nomeEl.textContent = nome; const avatar = document.getElementById('topAvatar'); if (avatar && perfil.data.foto_perfil_url) avatar.outerHTML = `<img src="${html(mediaUrl(perfil.data.foto_perfil_url))}" alt="${html(nome)}" class="avatar-mini" id="topAvatar">`; } const notificacoes = await api<NotificationItem[]>(`/notificacoes/?_=${Date.now()}`); const lista = document.getElementById('notificacoesLista'); const badge = document.getElementById('notifBadge'); const dados = notificacoes.status === 'success' ? notificacoes.data || [] : []; if (badge) { badge.textContent = String(dados.length); badge.hidden = dados.length === 0; } if (lista) { lista.innerHTML = dados.length ? dados.map(n => `<div class="notif-item"><div class="notif-avatar">${html(n.usuario_nome).slice(0,2).toUpperCase()}</div><div class="notif-body"><div class="notif-text"><strong>${html(n.usuario_nome)}</strong> tem interesse no seu livro <strong>${html(n.livro_titulo)}</strong>.</div><div class="notif-actions"><button class="btn-notif-accept" data-accept="${n.id}" type="button">Aceitar</button><button class="btn-notif-decline" data-decline="${n.id}" type="button">Recusar</button></div></div></div>`).join('') : '<div class="notif-empty">Nenhuma solicitação de troca no momento.</div>'; } }
-function configurarTopo(): void { montarSidebar(); document.getElementById('linkPerfil')?.addEventListener('click', () => location.href = 'perfil.html'); document.getElementById('botaoSair')?.addEventListener('click', async () => { await api('/logout/', { method: 'POST' }); localStorage.removeItem(AUTH_KEY); location.href = 'index.html'; }); document.getElementById('botaoNotificacoes')?.addEventListener('click', () => { const painel = document.getElementById('notifDropdown') as HTMLDivElement | null; if (painel) painel.hidden = !painel.hidden; }); document.addEventListener('click', async evento => { const alvo = evento.target as HTMLElement; const aceitar = alvo.dataset.accept; const recusar = alvo.dataset.decline; if (aceitar || recusar) { const path = aceitar ? `/interesse/${aceitar}/aceitar/` : `/interesse/${recusar}/recusar/`; await api(path, { method: 'POST' }); await atualizarTopo(); } }); void atualizarTopo(); window.setInterval(() => { void atualizarTopo(); }, 1000); }
+function abrirOuFecharNotificacoes(): void {
+  const painel = document.getElementById('notifDropdown') as HTMLDivElement | null;
+  if (!painel) return;
+  const vaiAbrir = painel.hidden || painel.style.display === 'none' || painel.style.display === '';
+  painel.hidden = !vaiAbrir;
+  painel.style.display = vaiAbrir ? 'block' : 'none';
+  if (vaiAbrir) void atualizarTopo();
+}
+
+function configurarTopo(): void {
+  montarSidebar();
+  document.getElementById('linkPerfil')?.addEventListener('click', () => location.href = 'perfil.html');
+  document.getElementById('botaoSair')?.addEventListener('click', async () => {
+    await api('/logout/', { method: 'POST' });
+    localStorage.removeItem(AUTH_KEY);
+    location.href = 'index.html';
+  });
+  document.getElementById('botaoNotificacoes')?.addEventListener('click', evento => {
+    evento.preventDefault();
+    evento.stopPropagation();
+    abrirOuFecharNotificacoes();
+  });
+  document.addEventListener('click', async evento => {
+    const alvo = evento.target as HTMLElement;
+    const aceitar = alvo.dataset.accept;
+    const recusar = alvo.dataset.decline;
+    if (aceitar || recusar) {
+      const path = aceitar ? `/interesse/${aceitar}/aceitar/` : `/interesse/${recusar}/recusar/`;
+      await api(path, { method: 'POST' });
+      await atualizarTopo();
+      return;
+    }
+    if (!alvo.closest('.notif-wrapper')) {
+      const painel = document.getElementById('notifDropdown') as HTMLDivElement | null;
+      if (painel) {
+        painel.hidden = true;
+        painel.style.display = 'none';
+      }
+    }
+  });
+  void atualizarTopo();
+  window.setInterval(() => { void atualizarTopo(); }, 1000);
+}
 async function carregarCidades(estadoSelect: HTMLSelectElement, cidadeSelect: HTMLSelectElement, estadoAtual = '', cidadeAtual = ''): Promise<void> { const resposta = await fetch('ibge_cidades.json'); const dados = await resposta.json() as CityData; estadoSelect.innerHTML = '<option value="">Selecione o estado</option>' + estados.map(uf => `<option value="${uf}" ${uf === estadoAtual ? 'selected' : ''}>${uf}</option>`).join(''); function preencherCidade(): void { const uf = estadoSelect.value; const cidades = dados[uf]?.cidades || []; cidadeSelect.innerHTML = '<option value="">Selecione a cidade</option>' + cidades.map(c => `<option value="${html(c)}" ${c === cidadeAtual ? 'selected' : ''}>${html(c)}</option>`).join(''); } estadoSelect.addEventListener('change', preencherCidade); preencherCidade(); }
