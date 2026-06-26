@@ -1,4 +1,10 @@
 "use strict";
+(function () {
+    const params = new URLSearchParams(location.search);
+    if (params.get('uid') && params.get('token')) {
+        location.replace('confirmar_senha.html?' + params.toString());
+    }
+})();
 var _a;
 (_a = document.getElementById('formLogin')) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', async (evento) => {
     evento.preventDefault();

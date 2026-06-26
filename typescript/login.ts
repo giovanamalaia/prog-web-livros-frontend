@@ -1,3 +1,10 @@
+(function () {
+  const params = new URLSearchParams(location.search);
+  if (params.get('uid') && params.get('token')) {
+    location.replace('confirmar_senha.html?' + params.toString());
+  }
+})();
+
 document.getElementById('formLogin')?.addEventListener('submit', async evento => {
   evento.preventDefault();
   const form = evento.target as HTMLFormElement;
