@@ -6,6 +6,18 @@ const paramsDetalheLivro = new URLSearchParams(location.search);
 const id = paramsDetalheLivro.get('id');
 const next = paramsDetalheLivro.get('next') || 'home.html';
 let livroAtual = null;
+let acaoInteresseEmAndamento = false;
+function atualizarAcoesDetalhe(livro) {
+    const acoes = document.getElementById('detalheAcoes');
+    if (livro.is_owner)
+        acoes.innerHTML = `<button class="btn-blue-action" id="editar" type="button">Editar livro</button><button class="btn-danger-action" id="excluir" type="button">Excluir livro</button>`;
+    else if (livro.meu_interesse)
+        acoes.innerHTML = `<button class="btn-danger-action" id="removerInteresse" type="button">Não tenho mais interesse</button>`;
+    else if (livro.status === 'disponivel' && livro.disponivel !== false)
+        acoes.innerHTML = `<button class="btn-blue-action" id="tenhoInteresse" type="button">Tenho interesse</button>`;
+    else
+        acoes.innerHTML = '';
+}
 async function carregarDetalhe() {
     const resposta = await api(`/livro/${id}/`);
     if (resposta.status !== 'success' || !resposta.data)
@@ -22,13 +34,7 @@ async function carregarDetalhe() {
         : '<div class="placeholder-capa-large">Sem capa</div>';
     document.getElementById('detalheAtributos').innerHTML =
         `<div class="attr-col"><span class="attr-label">Autor</span><span class="attr-value">${html(livro.autor)}</span></div><div class="attr-col"><span class="attr-label">Gênero</span><span class="attr-value">${html(livro.genero || '')}</span></div><div class="attr-col"><span class="attr-label">Estado</span><span class="attr-value">${html(livro.estado || '')}</span></div><div class="attr-col"><span class="attr-label">Status</span><span class="attr-value">${html(livro.status || '')}</span></div>`;
-    const acoes = document.getElementById('detalheAcoes');
-    if (livro.is_owner)
-        acoes.innerHTML = `<button class="btn-blue-action" id="editar" type="button">Editar livro</button><button class="btn-danger-action" id="excluir" type="button">Excluir livro</button>`;
-    else if (livro.meu_interesse)
-        acoes.innerHTML = `<button class="btn-danger-action" id="removerInteresse" type="button">Não tenho mais interesse</button>`;
-    else if (livro.status === 'disponivel' && livro.disponivel !== false)
-        acoes.innerHTML = `<button class="btn-blue-action" id="tenhoInteresse" type="button">Tenho interesse</button>`;
+    atualizarAcoesDetalhe(livro);
 }
 (_a = document.getElementById('botaoVoltar')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => (location.href = next));
 document.addEventListener('click', async (evento) => {
@@ -46,12 +52,44 @@ document.addEventListener('click', async (evento) => {
         location.href = 'perfil.html';
     }
     if (alvo.id === 'tenhoInteresse') {
-        await api(`/livro/${livroAtual.id}/interesse/`, { method: 'POST' });
-        await carregarDetalhe();
+        if (acaoInteresseEmAndamento)
+            return;
+        acaoInteresseEmAndamento = true;
+        const botao = alvo;
+        botao.disabled = true;
+        botao.textContent = 'Registrando...';
+        const resposta = await api(`/livro/${livroAtual.id}/interesse/`, { method: 'POST' });
+        if (resposta.status === 'success' || resposta.status === 'info') {
+            livroAtual = { ...livroAtual, meu_interesse: 'pendente' };
+            atualizarAcoesDetalhe(livroAtual);
+            void atualizarTopo();
+        }
+        else {
+            botao.disabled = false;
+            botao.textContent = 'Tenho interesse';
+            mostrarMensagem(resposta.message || 'Não foi possível registrar o interesse.', 'error');
+        }
+        acaoInteresseEmAndamento = false;
     }
     if (alvo.id === 'removerInteresse') {
-        await api(`/livro/${livroAtual.id}/interesse/excluir/`, { method: 'DELETE' });
-        await carregarDetalhe();
+        if (acaoInteresseEmAndamento)
+            return;
+        acaoInteresseEmAndamento = true;
+        const botao = alvo;
+        botao.disabled = true;
+        botao.textContent = 'Removendo...';
+        const resposta = await api(`/livro/${livroAtual.id}/interesse/excluir/`, { method: 'DELETE' });
+        if (resposta.status === 'success') {
+            livroAtual = { ...livroAtual, meu_interesse: null };
+            atualizarAcoesDetalhe(livroAtual);
+            void atualizarTopo();
+        }
+        else {
+            botao.disabled = false;
+            botao.textContent = 'Não tenho mais interesse';
+            mostrarMensagem(resposta.message || 'Não foi possível remover o interesse.', 'error');
+        }
+        acaoInteresseEmAndamento = false;
     }
 });
 void carregarDetalhe();
