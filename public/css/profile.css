@@ -49,13 +49,18 @@
     margin-bottom: 50px;
 }
 
-.profile-large-avatar {
+.profile-large-avatar,
+.user-profile-header .avatar-placeholder-large {
     width: 130px;
     height: 130px;
     border-radius: 50%;
-    object-fit: cover;
     box-shadow: 0 5px 15px rgba(0,0,0,0.15);
     border: 3px solid #fff;
+    flex-shrink: 0;
+}
+
+.profile-large-avatar {
+    object-fit: cover;
 }
 
 .user-profile-info h2 {

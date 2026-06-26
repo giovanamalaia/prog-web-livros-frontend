@@ -21,6 +21,7 @@
     "perfil.ts",
     "adicionar_livro.ts",
     "detalhe_livro.ts",
-    "configuracoes.ts"
+    "configuracoes.ts",
+    "perfil_publico.ts"
   ]
 }
