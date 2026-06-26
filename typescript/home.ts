@@ -9,5 +9,10 @@ async function carregarHome(): Promise<void> {
   conteudo.innerHTML = `${dados?.livros_perto?.length ? slider('Perto de você', dados.livros_perto) : ''}${slider('Últimos', dados?.latest_books || [])}${(dados?.livros_por_genero || []).map(g => slider(g.titulo_secao, g.livros)).join('')}`;
 }
 document.getElementById('formBusca')?.addEventListener('submit', evento => { evento.preventDefault(); void carregarHome(); });
+let debounceTimer: ReturnType<typeof setTimeout>;
+document.getElementById('q')?.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => void carregarHome(), 400);
+});
 void carregarHome();
 window.setInterval(() => { if (document.activeElement?.id !== 'q') void carregarHome(); }, 1000);
