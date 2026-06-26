@@ -1,10 +1,55 @@
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
-type ApiResponse<T = unknown> = { status: 'success' | 'error' | 'info'; message?: string; data?: T; errors?: Record<string, string[]>; livro_id?: number };
-type Book = { id: number; titulo: string; autor: string; genero?: string; estado?: string; status?: string; disponivel?: boolean; capa_url?: string | null; dono_id?: number; dono_username?: string; is_owner?: boolean; meu_interesse?: string | null };
-type HomeData = { latest_books: Book[]; livros_perto: Book[]; livros_por_genero: Array<{ titulo_secao: string; livros: Book[] }> };
-type ProfileData = { username: string; first_name: string; last_name: string; cidade: string | null; foto_perfil_url?: string | null; meus_livros: Book[] };
-type Favorite = { id: number; status_interesse: string; livro_id: number; livro_titulo: string; livro_autor: string; livro_capa_url?: string | null };
-type SettingsData = { username: string; first_name: string; last_name: string; email: string; estado: string | null; cidade: string | null; foto_perfil_url?: string | null };
+type ApiResponse<T = unknown> = {
+  status: 'success' | 'error' | 'info';
+  message?: string;
+  data?: T;
+  errors?: Record<string, string[]>;
+  livro_id?: number;
+};
+type Book = {
+  id: number;
+  titulo: string;
+  autor: string;
+  genero?: string;
+  estado?: string;
+  status?: string;
+  disponivel?: boolean;
+  capa_url?: string | null;
+  dono_id?: number;
+  dono_username?: string;
+  is_owner?: boolean;
+  meu_interesse?: string | null;
+};
+type HomeData = {
+  latest_books: Book[];
+  livros_perto: Book[];
+  livros_por_genero: Array<{ titulo_secao: string; livros: Book[] }>;
+};
+type ProfileData = {
+  username: string;
+  first_name: string;
+  last_name: string;
+  cidade: string | null;
+  foto_perfil_url?: string | null;
+  meus_livros: Book[];
+};
+type Favorite = {
+  id: number;
+  status_interesse: string;
+  livro_id: number;
+  livro_titulo: string;
+  livro_autor: string;
+  livro_capa_url?: string | null;
+};
+type SettingsData = {
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  estado: string | null;
+  cidade: string | null;
+  foto_perfil_url?: string | null;
+};
 type NotificationItem = { id: number; usuario_nome: string; livro_titulo: string };
 type CityData = Record<string, { nome: string; cidades: string[] }>;
 
@@ -13,12 +58,77 @@ const backendBase = backendAddress.replace(/\/api$/, '');
 const AUTH_KEY = 'livro_auth';
 let csrfReady = false;
 
-const estados = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
-const generos: Array<[string, string]> = [['ficcao_geral','Ficção Geral'],['nao_ficcao_geral','Não Ficção Geral'],['fantasia','Fantasia'],['ficcao_cientifica','Ficção Científica'],['romance','Romance'],['misterio_suspense','Mistério & Suspense'],['terror','Terror'],['aventura','Aventura'],['jovem_adulto','Jovem Adulto'],['infantil','Infantil & Infanto-juvenil'],['hq_manga','HQs, Mangás & Graphic Novels'],['biografia','Biografia'],['autoajuda','Autoajuda'],['academico','Acadêmicos'],['historia_politica','História & Política'],['religiao','Religião & Espiritualidade'],['classica','Literatura Clássica'],['contemporanea','Literatura Contemporânea'],['drama','Drama'],['poesia','Poesia'],['teatro','Teatro'],['outros','Outros']];
+const estados = [
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO',
+];
+const generos: Array<[string, string]> = [
+  ['ficcao_geral', 'Ficção Geral'],
+  ['nao_ficcao_geral', 'Não Ficção Geral'],
+  ['fantasia', 'Fantasia'],
+  ['ficcao_cientifica', 'Ficção Científica'],
+  ['romance', 'Romance'],
+  ['misterio_suspense', 'Mistério & Suspense'],
+  ['terror', 'Terror'],
+  ['aventura', 'Aventura'],
+  ['jovem_adulto', 'Jovem Adulto'],
+  ['infantil', 'Infantil & Infanto-juvenil'],
+  ['hq_manga', 'HQs, Mangás & Graphic Novels'],
+  ['biografia', 'Biografia'],
+  ['autoajuda', 'Autoajuda'],
+  ['academico', 'Acadêmicos'],
+  ['historia_politica', 'História & Política'],
+  ['religiao', 'Religião & Espiritualidade'],
+  ['classica', 'Literatura Clássica'],
+  ['contemporanea', 'Literatura Contemporânea'],
+  ['drama', 'Drama'],
+  ['poesia', 'Poesia'],
+  ['teatro', 'Teatro'],
+  ['outros', 'Outros'],
+];
 
-function html(valor: unknown): string { return String(valor ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-function mediaUrl(url: string | null | undefined): string { if (!url) return ''; if (url.startsWith('http://') || url.startsWith('https://')) return url; return `${backendBase}${url.startsWith('/') ? url : `/${url}`}`; }
-function cookie(nome: string): string { const partes = `; ${document.cookie}`.split(`; ${nome}=`); return partes.length === 2 ? decodeURIComponent(partes.pop()?.split(';').shift() || '') : ''; }
+function html(valor: unknown): string {
+  return String(valor ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+function mediaUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `${backendBase}${url.startsWith('/') ? url : `/${url}`}`;
+}
+function cookie(nome: string): string {
+  const partes = `; ${document.cookie}`.split(`; ${nome}=`);
+  return partes.length === 2 ? decodeURIComponent(partes.pop()?.split(';').shift() || '') : '';
+}
 function formObject(form: HTMLFormElement): Record<string, string> {
   const data: Record<string, string> = {};
   const elements = form.elements;
@@ -28,16 +138,100 @@ function formObject(form: HTMLFormElement): Record<string, string> {
   }
   return data;
 }
-function errorsToText(errors?: Record<string, string[]>): string { if (!errors) return ''; return Object.entries(errors).map(([campo, mensagens]) => `${campo}: ${mensagens.join(', ')}`).join(' '); }
-function mostrarMensagem(texto = '', tipo: 'success' | 'error' | 'info' = 'info'): void { const caixa = document.getElementById('mensagem') as HTMLDivElement | null; if (!caixa) return; caixa.innerHTML = texto ? `<div class="toast-message ${tipo}">${html(texto)}</div>` : ''; }
-function exigirLogin(): void { if (localStorage.getItem(AUTH_KEY) !== '1') location.href = 'index.html'; }
-async function ensureCsrf(): Promise<void> { if (csrfReady) return; await fetch(`${backendAddress}/csrf/`, { credentials: 'include' }); csrfReady = true; }
-async function api<T>(path: string, options: { method?: Method; body?: BodyInit | Record<string, unknown> } = {}): Promise<ApiResponse<T>> { const method = options.method || 'GET'; const headers = new Headers(); let body: BodyInit | undefined; if (options.body instanceof FormData) body = options.body; else if (options.body) { headers.set('Content-Type','application/json'); body = JSON.stringify(options.body); } if (method !== 'GET') { await ensureCsrf(); const token = cookie('csrftoken'); if (token) headers.set('X-CSRFToken', token); } try { const resposta = await fetch(`${backendAddress}${path}`, { method, headers, body, credentials: 'include' }); if (resposta.status === 401) localStorage.removeItem(AUTH_KEY); return await resposta.json() as ApiResponse<T>; } catch { return { status: 'error', message: 'Não consegui conectar ao backend.' }; } }
-function capaLivro(livro: Book): string { return livro.capa_url ? `<img src="${html(mediaUrl(livro.capa_url))}" alt="${html(livro.titulo)}">` : '<div class="placeholder-capa">Sem capa</div>'; }
-function cardLivro(livro: Book): string { return `<a class="book-card" href="detalhe_livro.html?id=${livro.id}&next=${encodeURIComponent(location.pathname.split('/').pop() || 'home.html')}" style="text-decoration:none;color:inherit;display:block;"><span class="book-cover-wrapper">${capaLivro(livro)}</span><span class="book-title">${html(livro.titulo)}</span><span class="book-author">${html(livro.autor)}</span></a>`; }
-function slider(titulo: string, livros: Book[]): string { return `<div class="book-slider-section"><div class="slider-header"><h3>${html(titulo)}</h3></div><div class="slider-container">${livros.length ? livros.map(cardLivro).join('') : '<p class="empty-msg">Nenhum livro encontrado nesta seção.</p>'}</div></div>`; }
-function montarSidebar(): void { const sidebar = document.getElementById('sidebar'); if (!sidebar) return; sidebar.innerHTML = `<div class="sidebar-inner"><div class="sidebar-brand"><i class="fa-solid fa-book"></i></div><div class="sidebar-sep"></div><nav class="sidebar-nav"><a class="sidebar-link" href="home.html" aria-label="Início"><i class="fa-solid fa-house sidebar-icon"></i></a><a class="sidebar-link" href="favoritos.html" aria-label="Favoritos"><i class="fa-solid fa-heart sidebar-icon"></i></a><a class="sidebar-link" href="perfil.html" aria-label="Perfil"><i class="fa-solid fa-user sidebar-icon"></i></a><a class="sidebar-link" href="adicionar_livro.html" aria-label="Adicionar livro"><i class="fa-solid fa-plus sidebar-icon"></i></a><a class="sidebar-link" href="configuracoes.html" aria-label="Configurações"><i class="fa-solid fa-gear sidebar-icon"></i></a></nav></div>`; }
-async function atualizarTopo(): Promise<void> { const perfil = await api<SettingsData>('/configuracoes/'); if (perfil.status === 'success' && perfil.data) { const nome = perfil.data.first_name || perfil.data.username; const nomeEl = document.getElementById('topUsername'); if (nomeEl) nomeEl.textContent = nome; const avatar = document.getElementById('topAvatar'); if (avatar && perfil.data.foto_perfil_url) avatar.outerHTML = `<img src="${html(mediaUrl(perfil.data.foto_perfil_url))}" alt="${html(nome)}" class="avatar-mini" id="topAvatar">`; } const notificacoes = await api<NotificationItem[]>(`/notificacoes/?_=${Date.now()}`); const lista = document.getElementById('notificacoesLista'); const badge = document.getElementById('notifBadge'); const dados = notificacoes.status === 'success' ? notificacoes.data || [] : []; if (badge) { badge.textContent = String(dados.length); badge.hidden = dados.length === 0; } if (lista) { lista.innerHTML = dados.length ? dados.map(n => `<div class="notif-item"><div class="notif-avatar">${html(n.usuario_nome).slice(0,2).toUpperCase()}</div><div class="notif-body"><div class="notif-text"><strong>${html(n.usuario_nome)}</strong> tem interesse no seu livro <strong>${html(n.livro_titulo)}</strong>.</div><div class="notif-actions"><button class="btn-notif-accept" data-accept="${n.id}" type="button">Aceitar</button><button class="btn-notif-decline" data-decline="${n.id}" type="button">Recusar</button></div></div></div>`).join('') : '<div class="notif-empty">Nenhuma solicitação de troca no momento.</div>'; } }
+function errorsToText(errors?: Record<string, string[]>): string {
+  if (!errors) return '';
+  return Object.entries(errors)
+    .map(([campo, mensagens]) => `${campo}: ${mensagens.join(', ')}`)
+    .join(' ');
+}
+function mostrarMensagem(texto = '', tipo: 'success' | 'error' | 'info' = 'info'): void {
+  const caixa = document.getElementById('mensagem') as HTMLDivElement | null;
+  if (!caixa) return;
+  caixa.innerHTML = texto ? `<div class="toast-message ${tipo}">${html(texto)}</div>` : '';
+}
+function exigirLogin(): void {
+  if (localStorage.getItem(AUTH_KEY) !== '1') location.href = 'index.html';
+}
+async function ensureCsrf(): Promise<void> {
+  if (csrfReady) return;
+  await fetch(`${backendAddress}/csrf/`, { credentials: 'include' });
+  csrfReady = true;
+}
+async function api<T>(
+  path: string,
+  options: { method?: Method; body?: BodyInit | Record<string, unknown> } = {},
+): Promise<ApiResponse<T>> {
+  const method = options.method || 'GET';
+  const headers = new Headers();
+  let body: BodyInit | undefined;
+  if (options.body instanceof FormData) body = options.body;
+  else if (options.body) {
+    headers.set('Content-Type', 'application/json');
+    body = JSON.stringify(options.body);
+  }
+  if (method !== 'GET') {
+    await ensureCsrf();
+    const token = cookie('csrftoken');
+    if (token) headers.set('X-CSRFToken', token);
+  }
+  try {
+    const resposta = await fetch(`${backendAddress}${path}`, { method, headers, body, credentials: 'include' });
+    if (resposta.status === 401) localStorage.removeItem(AUTH_KEY);
+    return (await resposta.json()) as ApiResponse<T>;
+  } catch {
+    return { status: 'error', message: 'Não consegui conectar ao backend.' };
+  }
+}
+function capaLivro(livro: Book): string {
+  return livro.capa_url
+    ? `<img src="${html(mediaUrl(livro.capa_url))}" alt="${html(livro.titulo)}">`
+    : '<div class="placeholder-capa">Sem capa</div>';
+}
+function cardLivro(livro: Book): string {
+  return `<a class="book-card" href="detalhe_livro.html?id=${livro.id}&next=${encodeURIComponent(location.pathname.split('/').pop() || 'home.html')}" style="text-decoration:none;color:inherit;display:block;"><span class="book-cover-wrapper">${capaLivro(livro)}</span><span class="book-title">${html(livro.titulo)}</span><span class="book-author">${html(livro.autor)}</span></a>`;
+}
+function slider(titulo: string, livros: Book[]): string {
+  return `<div class="book-slider-section"><div class="slider-header"><h3>${html(titulo)}</h3></div><div class="slider-container">${livros.length ? livros.map(cardLivro).join('') : '<p class="empty-msg">Nenhum livro encontrado nesta seção.</p>'}</div></div>`;
+}
+function montarTopBarRight(): void {
+  const container = document.getElementById('topBarRight');
+  if (!container) return;
+  container.innerHTML = `<button class="user-info-mini" id="linkPerfil" type="button"><span id="topAvatar" class="avatar-placeholder-mini"><i class="fa-solid fa-user"></i></span><span id="topUsername">Perfil</span></button><div class="notif-wrapper"><button class="notif-btn" id="botaoNotificacoes" type="button"><i class="fa-regular fa-bell bell-icon"></i><span class="notif-badge" id="notifBadge" hidden>0</span></button><div class="notif-dropdown" id="notifDropdown" hidden><h4>Notificações</h4><div class="notif-items-container" id="notificacoesLista"></div></div></div><button class="top-bar-sair" id="botaoSair" type="button"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>`;
+}
+function montarSidebar(): void {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  sidebar.innerHTML = `<div class="sidebar-inner"><div class="sidebar-brand"><i class="fa-solid fa-book"></i></div><div class="sidebar-sep"></div><nav class="sidebar-nav"><a class="sidebar-link" href="home.html" aria-label="Início"><i class="fa-solid fa-house sidebar-icon"></i></a><a class="sidebar-link" href="favoritos.html" aria-label="Favoritos"><i class="fa-solid fa-heart sidebar-icon"></i></a><a class="sidebar-link" href="perfil.html" aria-label="Perfil"><i class="fa-solid fa-user sidebar-icon"></i></a><a class="sidebar-link" href="adicionar_livro.html" aria-label="Adicionar livro"><i class="fa-solid fa-plus sidebar-icon"></i></a><a class="sidebar-link" href="configuracoes.html" aria-label="Configurações"><i class="fa-solid fa-gear sidebar-icon"></i></a></nav></div>`;
+}
+async function atualizarTopo(): Promise<void> {
+  const perfil = await api<SettingsData>('/configuracoes/');
+  if (perfil.status === 'success' && perfil.data) {
+    const nome = perfil.data.first_name || perfil.data.username;
+    const nomeEl = document.getElementById('topUsername');
+    if (nomeEl) nomeEl.textContent = nome;
+    const avatar = document.getElementById('topAvatar');
+    if (avatar && perfil.data.foto_perfil_url)
+      avatar.outerHTML = `<img src="${html(mediaUrl(perfil.data.foto_perfil_url))}" alt="${html(nome)}" class="avatar-mini" id="topAvatar">`;
+  }
+  const notificacoes = await api<NotificationItem[]>(`/notificacoes/?_=${Date.now()}`);
+  const lista = document.getElementById('notificacoesLista');
+  const badge = document.getElementById('notifBadge');
+  const dados = notificacoes.status === 'success' ? notificacoes.data || [] : [];
+  if (badge) {
+    badge.textContent = String(dados.length);
+    badge.hidden = dados.length === 0;
+  }
+  if (lista) {
+    lista.innerHTML = dados.length
+      ? dados
+          .map(
+            (n) =>
+              `<div class="notif-item"><div class="notif-avatar">${html(n.usuario_nome).slice(0, 2).toUpperCase()}</div><div class="notif-body"><div class="notif-text"><strong>${html(n.usuario_nome)}</strong> tem interesse no seu livro <strong>${html(n.livro_titulo)}</strong>.</div><div class="notif-actions"><button class="btn-notif-accept" data-accept="${n.id}" type="button">Aceitar</button><button class="btn-notif-decline" data-decline="${n.id}" type="button">Recusar</button></div></div></div>`,
+          )
+          .join('')
+      : '<div class="notif-empty">Nenhuma solicitação de troca no momento.</div>';
+  }
+}
 function abrirOuFecharNotificacoes(): void {
   const painel = document.getElementById('notifDropdown') as HTMLDivElement | null;
   if (!painel) return;
@@ -48,19 +242,20 @@ function abrirOuFecharNotificacoes(): void {
 }
 
 function configurarTopo(): void {
+  montarTopBarRight();
   montarSidebar();
-  document.getElementById('linkPerfil')?.addEventListener('click', () => location.href = 'perfil.html');
+  document.getElementById('linkPerfil')?.addEventListener('click', () => (location.href = 'perfil.html'));
   document.getElementById('botaoSair')?.addEventListener('click', async () => {
     await api('/logout/', { method: 'POST' });
     localStorage.removeItem(AUTH_KEY);
     location.href = 'index.html';
   });
-  document.getElementById('botaoNotificacoes')?.addEventListener('click', evento => {
+  document.getElementById('botaoNotificacoes')?.addEventListener('click', (evento) => {
     evento.preventDefault();
     evento.stopPropagation();
     abrirOuFecharNotificacoes();
   });
-  document.addEventListener('click', async evento => {
+  document.addEventListener('click', async (evento) => {
     const alvo = evento.target as HTMLElement;
     const aceitar = alvo.dataset.accept;
     const recusar = alvo.dataset.decline;
@@ -79,6 +274,30 @@ function configurarTopo(): void {
     }
   });
   void atualizarTopo();
-  window.setInterval(() => { void atualizarTopo(); }, 1000);
+  window.setInterval(() => {
+    void atualizarTopo();
+  }, 1000);
 }
-async function carregarCidades(estadoSelect: HTMLSelectElement, cidadeSelect: HTMLSelectElement, estadoAtual = '', cidadeAtual = ''): Promise<void> { const resposta = await fetch('ibge_cidades.json'); const dados = await resposta.json() as CityData; estadoSelect.innerHTML = '<option value="">Selecione o estado</option>' + estados.map(uf => `<option value="${uf}" ${uf === estadoAtual ? 'selected' : ''}>${uf}</option>`).join(''); function preencherCidade(): void { const uf = estadoSelect.value; const cidades = dados[uf]?.cidades || []; cidadeSelect.innerHTML = '<option value="">Selecione a cidade</option>' + cidades.map(c => `<option value="${html(c)}" ${c === cidadeAtual ? 'selected' : ''}>${html(c)}</option>`).join(''); } estadoSelect.addEventListener('change', preencherCidade); preencherCidade(); }
+async function carregarCidades(
+  estadoSelect: HTMLSelectElement,
+  cidadeSelect: HTMLSelectElement,
+  estadoAtual = '',
+  cidadeAtual = '',
+): Promise<void> {
+  const resposta = await fetch('ibge_cidades.json');
+  const dados = (await resposta.json()) as CityData;
+  estadoSelect.innerHTML =
+    '<option value="">Selecione o estado</option>' +
+    estados.map((uf) => `<option value="${uf}" ${uf === estadoAtual ? 'selected' : ''}>${uf}</option>`).join('');
+  function preencherCidade(): void {
+    const uf = estadoSelect.value;
+    const cidades = dados[uf]?.cidades || [];
+    cidadeSelect.innerHTML =
+      '<option value="">Selecione a cidade</option>' +
+      cidades
+        .map((c) => `<option value="${html(c)}" ${c === cidadeAtual ? 'selected' : ''}>${html(c)}</option>`)
+        .join('');
+  }
+  estadoSelect.addEventListener('change', preencherCidade);
+  preencherCidade();
+}

@@ -11,8 +11,10 @@ async function carregarPerfil() {
     document.getElementById('nomePerfil').textContent = nome;
     document.getElementById('cidadePerfil').textContent = dados.cidade || 'Meus livros para troca';
     if (dados.foto_perfil_url)
-        document.getElementById('fotoPerfil').outerHTML = `<img src="${html(mediaUrl(dados.foto_perfil_url))}" class="profile-large-avatar" id="fotoPerfil" alt="${html(nome)}">`;
+        document.getElementById('fotoPerfil').outerHTML =
+            `<img src="${html(mediaUrl(dados.foto_perfil_url))}" class="profile-large-avatar" id="fotoPerfil" alt="${html(nome)}">`;
     document.getElementById('meusLivros').innerHTML = slider('Meus livros', dados.meus_livros);
 }
-(_a = document.getElementById('botaoAdicionarLivro')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => location.href = 'adicionar_livro.html');
+(_a = document
+    .getElementById('botaoAdicionarLivro')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => (location.href = 'adicionar_livro.html'));
 void carregarPerfil();

@@ -1,7 +1,13 @@
-document.getElementById('formRecuperarSenha')?.addEventListener('submit', async evento => {
+document.getElementById('formRecuperarSenha')?.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const form = evento.target as HTMLFormElement;
   const dados = formObject(form);
-  const resposta = await api('/senha/recuperar/', { method: 'POST', body: { email: dados.email, frontend_url: location.origin } });
-  mostrarMensagem(resposta.message || 'Se o e-mail estiver cadastrado, enviaremos um link.', resposta.status === 'success' ? 'success' : 'error');
+  const resposta = await api('/senha/recuperar/', {
+    method: 'POST',
+    body: { email: dados.email, frontend_url: location.origin },
+  });
+  mostrarMensagem(
+    resposta.message || 'Se o e-mail estiver cadastrado, enviaremos um link.',
+    resposta.status === 'success' ? 'success' : 'error',
+  );
 });

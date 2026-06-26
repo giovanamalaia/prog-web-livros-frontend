@@ -3,10 +3,12 @@ window.onload = async () => {
   const cidade = document.getElementById('cidade') as HTMLSelectElement;
   await carregarCidades(estado, cidade);
 };
-document.getElementById('formCadastro')?.addEventListener('submit', async evento => {
+document.getElementById('formCadastro')?.addEventListener('submit', async (evento) => {
   evento.preventDefault();
   const form = evento.target as HTMLFormElement;
   const resposta = await api('/cadastro/', { method: 'POST', body: formObject(form) });
-  if (resposta.status === 'success') { localStorage.setItem(AUTH_KEY, '1'); location.href = 'home.html'; }
-  else mostrarMensagem(resposta.message || errorsToText(resposta.errors) || 'Cadastro inválido.', 'error');
+  if (resposta.status === 'success') {
+    localStorage.setItem(AUTH_KEY, '1');
+    location.href = 'home.html';
+  } else mostrarMensagem(resposta.message || errorsToText(resposta.errors) || 'Cadastro inválido.', 'error');
 });

@@ -1,30 +1,45 @@
 <!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Livrô</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" referrerpolicy="no-referrer">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/buttons.css">
-  <link rel="stylesheet" href="css/toasts.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/forms.css">
-  <link rel="stylesheet" href="css/profile.css">
-  <link rel="stylesheet" href="css/books.css?v=20260626-5">
-  <link rel="stylesheet" href="css/auth.css">
-</head>
-<body class="auth-only-layout">
-  <main class="app-content">
-    <div id="mensagem" class="toast-container"></div>
-    <div class="auth-shell"><div class="auth-copy"><p class="auth-kicker">Nova senha</p><h1>Redefinir senha</h1><p>Digite uma nova senha para concluir a recuperação.</p></div><form class="auth-card" id="formConfirmarSenha"><label>Nova senha<input name="new_password1" type="password" required></label><label>Confirmar nova senha<input name="new_password2" type="password" required></label><button class="btn-primary-full" type="submit">Salvar nova senha</button></form></div>
-  </main>
-  <script src="javascript/comum.js?v=20260626-1"></script>
-  <script src="javascript/confirmar_senha.js?v=20260626-1"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Livrô</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/buttons.css" />
+    <link rel="stylesheet" href="css/toasts.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/forms.css" />
+    <link rel="stylesheet" href="css/profile.css" />
+    <link rel="stylesheet" href="css/books.css?v=20260626-5" />
+    <link rel="stylesheet" href="css/auth.css" />
+  </head>
+  <body class="auth-only-layout">
+    <main class="app-content">
+      <div id="mensagem" class="toast-container"></div>
+      <div class="auth-shell">
+        <div class="auth-copy">
+          <p class="auth-kicker">Nova senha</p>
+          <h1>Redefinir senha</h1>
+          <p>Digite uma nova senha para concluir a recuperação.</p>
+        </div>
+        <form class="auth-card" id="formConfirmarSenha">
+          <label>Nova senha<input name="new_password1" type="password" required /></label
+          ><label>Confirmar nova senha<input name="new_password2" type="password" required /></label
+          ><button class="btn-primary-full" type="submit">Salvar nova senha</button>
+        </form>
+      </div>
+    </main>
+    <script src="javascript/comum.js?v=20260626-1"></script>
+    <script src="javascript/confirmar_senha.js?v=20260626-1"></script>
+  </body>
 </html>

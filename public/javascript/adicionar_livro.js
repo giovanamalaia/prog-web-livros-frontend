@@ -4,7 +4,10 @@ exigirLogin();
 configurarTopo();
 const paramsLivroForm = new URLSearchParams(location.search);
 const livroId = paramsLivroForm.get('id');
-function preencherGeneros() { const select = document.getElementById('genero'); select.innerHTML = generos.map(([v, l]) => `<option value="${v}">${l}</option>`).join(''); }
+function preencherGeneros() {
+    const select = document.getElementById('genero');
+    select.innerHTML = generos.map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+}
 async function carregarLivro() {
     preencherGeneros();
     if (!livroId)
@@ -31,7 +34,10 @@ async function carregarLivro() {
     const file = dados.get('capa');
     if (file instanceof File && !file.name)
         dados.delete('capa');
-    const resposta = await api(id ? `/editar-livro/${id}/` : '/adicionar-livro/', { method: id ? 'PUT' : 'POST', body: dados });
+    const resposta = await api(id ? `/editar-livro/${id}/` : '/adicionar-livro/', {
+        method: id ? 'PUT' : 'POST',
+        body: dados,
+    });
     if (resposta.status === 'success')
         location.href = 'perfil.html';
     else
