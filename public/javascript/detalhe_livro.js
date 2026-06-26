@@ -14,7 +14,7 @@ async function carregarDetalhe() {
     livroAtual = livro;
     document.getElementById('detalheTitulo').textContent = livro.titulo;
     document.getElementById('detalheDono').textContent = livro.dono_username || 'Dono';
-    document.getElementById('detalheCapa').innerHTML = livro.capa_url ? `<img src="${html(livro.capa_url)}" alt="${html(livro.titulo)}">` : '<div class="placeholder-capa-large">Sem capa</div>';
+    document.getElementById('detalheCapa').innerHTML = livro.capa_url ? `<img src="${html(mediaUrl(livro.capa_url))}" alt="${html(livro.titulo)}">` : '<div class="placeholder-capa-large">Sem capa</div>';
     document.getElementById('detalheAtributos').innerHTML = `<div class="attr-col"><span class="attr-label">Autor</span><span class="attr-value">${html(livro.autor)}</span></div><div class="attr-col"><span class="attr-label">Gênero</span><span class="attr-value">${html(livro.genero || '')}</span></div><div class="attr-col"><span class="attr-label">Estado</span><span class="attr-value">${html(livro.estado || '')}</span></div><div class="attr-col"><span class="attr-label">Status</span><span class="attr-value">${html(livro.status || '')}</span></div>`;
     const acoes = document.getElementById('detalheAcoes');
     if (livro.is_owner)

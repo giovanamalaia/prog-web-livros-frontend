@@ -13,7 +13,7 @@ async function carregarConfiguracoes() {
     document.getElementById('email').value = d.email || '';
     document.getElementById('usuarioConfiguracoes').textContent = d.username || 'Perfil';
     if (d.foto_perfil_url)
-        document.getElementById('fotoConfiguracoes').outerHTML = `<img src="${html(d.foto_perfil_url)}" class="profile-large-avatar" id="fotoConfiguracoes" alt="${html(d.username)}">`;
+        document.getElementById('fotoConfiguracoes').outerHTML = `<img src="${html(mediaUrl(d.foto_perfil_url))}" class="profile-large-avatar" id="fotoConfiguracoes" alt="${html(d.username)}">`;
     await carregarCidades(document.getElementById('estado'), document.getElementById('cidade'), d.estado || '', d.cidade || '');
 }
 (_a = document.getElementById('formConfiguracoes')) === null || _a === void 0 ? void 0 : _a.addEventListener('submit', async (evento) => { evento.preventDefault(); const form = evento.target; const dados = new FormData(form); const file = dados.get('foto_perfil'); if (file instanceof File && !file.name)

@@ -1,10 +1,14 @@
 "use strict";
 const backendAddress = 'http://127.0.0.1:8000/api';
+const backendBase = backendAddress.replace(/\/api$/, '');
 const AUTH_KEY = 'livro_auth';
 let csrfReady = false;
 const estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 const generos = [['ficcao_geral', 'Ficção Geral'], ['nao_ficcao_geral', 'Não Ficção Geral'], ['fantasia', 'Fantasia'], ['ficcao_cientifica', 'Ficção Científica'], ['romance', 'Romance'], ['misterio_suspense', 'Mistério & Suspense'], ['terror', 'Terror'], ['aventura', 'Aventura'], ['jovem_adulto', 'Jovem Adulto'], ['infantil', 'Infantil & Infanto-juvenil'], ['hq_manga', 'HQs, Mangás & Graphic Novels'], ['biografia', 'Biografia'], ['autoajuda', 'Autoajuda'], ['academico', 'Acadêmicos'], ['historia_politica', 'História & Política'], ['religiao', 'Religião & Espiritualidade'], ['classica', 'Literatura Clássica'], ['contemporanea', 'Literatura Contemporânea'], ['drama', 'Drama'], ['poesia', 'Poesia'], ['teatro', 'Teatro'], ['outros', 'Outros']];
 function html(valor) { return String(valor !== null && valor !== void 0 ? valor : '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+function mediaUrl(url) { if (!url)
+    return ''; if (url.startsWith('http://') || url.startsWith('https://'))
+    return url; return `${backendBase}${url.startsWith('/') ? url : `/${url}`}`; }
 function cookie(nome) { var _a; const partes = `; ${document.cookie}`.split(`; ${nome}=`); return partes.length === 2 ? decodeURIComponent(((_a = partes.pop()) === null || _a === void 0 ? void 0 : _a.split(';').shift()) || '') : ''; }
 function formObject(form) {
     const data = {};
@@ -43,7 +47,7 @@ else if (options.body) {
 catch (_a) {
     return { status: 'error', message: 'Não consegui conectar ao backend.' };
 } }
-function capaLivro(livro) { return livro.capa_url ? `<img src="${html(livro.capa_url)}" alt="${html(livro.titulo)}">` : '<div class="placeholder-capa">Sem capa</div>'; }
+function capaLivro(livro) { return livro.capa_url ? `<img src="${html(mediaUrl(livro.capa_url))}" alt="${html(livro.titulo)}">` : '<div class="placeholder-capa">Sem capa</div>'; }
 function cardLivro(livro) { return `<a class="book-card" href="detalhe_livro.html?id=${livro.id}&next=${encodeURIComponent(location.pathname.split('/').pop() || 'home.html')}" style="text-decoration:none;color:inherit;display:block;"><span class="book-cover-wrapper">${capaLivro(livro)}</span><span class="book-title">${html(livro.titulo)}</span><span class="book-author">${html(livro.autor)}</span></a>`; }
 function slider(titulo, livros) { return `<div class="book-slider-section"><div class="slider-header"><h3>${html(titulo)}</h3></div><div class="slider-container">${livros.length ? livros.map(cardLivro).join('') : '<p class="empty-msg">Nenhum livro encontrado nesta seção.</p>'}</div></div>`; }
 function montarSidebar() { const sidebar = document.getElementById('sidebar'); if (!sidebar)
@@ -55,7 +59,7 @@ async function atualizarTopo() { const perfil = await api('/configuracoes/'); if
         nomeEl.textContent = nome;
     const avatar = document.getElementById('topAvatar');
     if (avatar && perfil.data.foto_perfil_url)
-        avatar.outerHTML = `<img src="${html(perfil.data.foto_perfil_url)}" alt="${html(nome)}" class="avatar-mini" id="topAvatar">`;
+        avatar.outerHTML = `<img src="${html(mediaUrl(perfil.data.foto_perfil_url))}" alt="${html(nome)}" class="avatar-mini" id="topAvatar">`;
 } const notificacoes = await api(`/notificacoes/?_=${Date.now()}`); const lista = document.getElementById('notificacoesLista'); const badge = document.getElementById('notifBadge'); const dados = notificacoes.status === 'success' ? notificacoes.data || [] : []; if (badge) {
     badge.textContent = String(dados.length);
     badge.hidden = dados.length === 0;
