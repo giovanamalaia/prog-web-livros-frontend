@@ -19,7 +19,7 @@ async function carregarPerfilPublico() {
     document.getElementById('nomePerfilPublico').textContent = nome;
     if (dados.foto_perfil_url)
         document.getElementById('fotoPerfilPublico').outerHTML =
-            `<img src="${html(mediaUrl(dados.foto_perfil_url))}" class="profile-large-avatar" id="fotoPerfilPublico" alt="${html(nome)}">>`;
+            `<img src="${html(mediaUrl(dados.foto_perfil_url))}" class="profile-large-avatar" id="fotoPerfilPublico" alt="${html(nome)}">`;
     const livros = (_b = (_a = dados.meus_livros) !== null && _a !== void 0 ? _a : dados.livros) !== null && _b !== void 0 ? _b : [];
     document.getElementById('livrosPerfilPublico').innerHTML = slider(`Livros de ${html(nome)}`, livros);
 }

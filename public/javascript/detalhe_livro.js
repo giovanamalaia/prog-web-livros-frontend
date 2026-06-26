@@ -7,6 +7,18 @@ const id = paramsDetalheLivro.get('id');
 const next = paramsDetalheLivro.get('next') || 'home.html';
 let livroAtual = null;
 let acaoInteresseEmAndamento = false;
+function textoGenero(valor) {
+    var _a;
+    return ((_a = generos.find(([codigo]) => codigo === valor)) === null || _a === void 0 ? void 0 : _a[1]) || valor || '';
+}
+function textoEstadoLivro(valor) {
+    const estadosLivro = {
+        SN: 'Semi-novo',
+        N: 'Novo',
+        U: 'Usado',
+    };
+    return valor ? estadosLivro[valor] || valor : '';
+}
 function atualizarAcoesDetalhe(livro) {
     const acoes = document.getElementById('detalheAcoes');
     if (livro.is_owner)
@@ -25,6 +37,11 @@ async function carregarDetalhe() {
     const livro = resposta.data;
     livroAtual = livro;
     document.getElementById('detalheTitulo').textContent = livro.titulo;
+    const donoArea = document.querySelector('.book-owner-area');
+    const donoAvatar = livro.dono_foto_perfil_url
+        ? `<img src="${html(mediaUrl(livro.dono_foto_perfil_url))}" alt="${html(livro.dono_username || 'Dono')}">`
+        : '<div class="avatar-placeholder-mini"><i class="fa-solid fa-user"></i></div>';
+    donoArea.innerHTML = `${donoAvatar}<button id="detalheDono" class="btn-as-link" type="button">Dono</button>`;
     const donoBtn = document.getElementById('detalheDono');
     donoBtn.textContent = livro.dono_username || 'Dono';
     if (livro.dono_id)
@@ -33,7 +50,7 @@ async function carregarDetalhe() {
         ? `<img src="${html(mediaUrl(livro.capa_url))}" alt="${html(livro.titulo)}">`
         : '<div class="placeholder-capa-large">Sem capa</div>';
     document.getElementById('detalheAtributos').innerHTML =
-        `<div class="attr-col"><span class="attr-label">Autor</span><span class="attr-value">${html(livro.autor)}</span></div><div class="attr-col"><span class="attr-label">Gênero</span><span class="attr-value">${html(livro.genero || '')}</span></div><div class="attr-col"><span class="attr-label">Estado</span><span class="attr-value">${html(livro.estado || '')}</span></div><div class="attr-col"><span class="attr-label">Status</span><span class="attr-value">${html(livro.status || '')}</span></div>`;
+        `<div class="attr-col"><span class="attr-label">Autor</span><span class="attr-value">${html(livro.autor)}</span></div><div class="attr-col"><span class="attr-label">Gênero</span><span class="attr-value">${html(textoGenero(livro.genero))}</span></div><div class="attr-col"><span class="attr-label">Estado</span><span class="attr-value">${html(textoEstadoLivro(livro.estado))}</span></div><div class="attr-col"><span class="attr-label">Status</span><span class="attr-value">${html(livro.status || '')}</span></div>`;
     atualizarAcoesDetalhe(livro);
 }
 (_a = document.getElementById('botaoVoltar')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => (location.href = next));

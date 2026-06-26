@@ -180,7 +180,7 @@ async function atualizarTopo() {
     if (lista) {
         lista.innerHTML = dados.length
             ? dados
-                .map((n) => `<div class="notif-item"><div class="notif-avatar">${html(n.usuario_nome).slice(0, 2).toUpperCase()}</div><div class="notif-body"><div class="notif-text"><strong>${html(n.usuario_nome)}</strong> tem interesse no seu livro <strong>${html(n.livro_titulo)}</strong>.</div><div class="notif-actions"><button class="btn-notif-accept" data-accept="${n.id}" type="button">Aceitar</button><button class="btn-notif-decline" data-decline="${n.id}" type="button">Recusar</button></div></div></div>`)
+                .map((n) => `<div class="notif-item"><div class="notif-avatar">${n.usuario_foto_perfil_url ? `<img src="${html(mediaUrl(n.usuario_foto_perfil_url))}" alt="${html(n.usuario_nome)}" class="notif-img">` : html(n.usuario_nome).slice(0, 2).toUpperCase()}</div><div class="notif-body"><div class="notif-text"><strong>${html(n.usuario_nome)}</strong> tem interesse no seu livro <strong>${html(n.livro_titulo)}</strong>.</div><div class="notif-actions"><button class="btn-notif-accept" data-accept="${n.id}" type="button">Aceitar</button><button class="btn-notif-decline" data-decline="${n.id}" type="button">Recusar</button></div></div></div>`)
                 .join('')
             : '<div class="notif-empty">Nenhuma solicitação de troca no momento.</div>';
     }

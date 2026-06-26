@@ -17,6 +17,7 @@ type Book = {
   capa_url?: string | null;
   dono_id?: number;
   dono_username?: string;
+  dono_foto_perfil_url?: string | null;
   is_owner?: boolean;
   meu_interesse?: string | null;
 };
@@ -50,7 +51,7 @@ type SettingsData = {
   cidade: string | null;
   foto_perfil_url?: string | null;
 };
-type NotificationItem = { id: number; usuario_nome: string; livro_titulo: string };
+type NotificationItem = { id: number; usuario_nome: string; usuario_foto_perfil_url?: string | null; livro_titulo: string };
 type CityData = Record<string, { nome: string; cidades: string[] }>;
 
 const backendAddress = 'http://127.0.0.1:8000/api';
@@ -226,7 +227,7 @@ async function atualizarTopo(): Promise<void> {
       ? dados
           .map(
             (n) =>
-              `<div class="notif-item"><div class="notif-avatar">${html(n.usuario_nome).slice(0, 2).toUpperCase()}</div><div class="notif-body"><div class="notif-text"><strong>${html(n.usuario_nome)}</strong> tem interesse no seu livro <strong>${html(n.livro_titulo)}</strong>.</div><div class="notif-actions"><button class="btn-notif-accept" data-accept="${n.id}" type="button">Aceitar</button><button class="btn-notif-decline" data-decline="${n.id}" type="button">Recusar</button></div></div></div>`,
+              `<div class="notif-item"><div class="notif-avatar">${n.usuario_foto_perfil_url ? `<img src="${html(mediaUrl(n.usuario_foto_perfil_url))}" alt="${html(n.usuario_nome)}" class="notif-img">` : html(n.usuario_nome).slice(0, 2).toUpperCase()}</div><div class="notif-body"><div class="notif-text"><strong>${html(n.usuario_nome)}</strong> tem interesse no seu livro <strong>${html(n.livro_titulo)}</strong>.</div><div class="notif-actions"><button class="btn-notif-accept" data-accept="${n.id}" type="button">Aceitar</button><button class="btn-notif-decline" data-decline="${n.id}" type="button">Recusar</button></div></div></div>`,
           )
           .join('')
       : '<div class="notif-empty">Nenhuma solicitação de troca no momento.</div>';

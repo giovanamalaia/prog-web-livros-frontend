@@ -22,7 +22,7 @@ async function carregarPerfilPublico(): Promise<void> {
   (document.getElementById('nomePerfilPublico') as HTMLElement).textContent = nome;
   if (dados.foto_perfil_url)
     (document.getElementById('fotoPerfilPublico') as HTMLElement).outerHTML =
-      `<img src="${html(mediaUrl(dados.foto_perfil_url))}" class="profile-large-avatar" id="fotoPerfilPublico" alt="${html(nome)}">>`;
+      `<img src="${html(mediaUrl(dados.foto_perfil_url))}" class="profile-large-avatar" id="fotoPerfilPublico" alt="${html(nome)}">`;
   const livros = dados.meus_livros ?? dados.livros ?? [];
   (document.getElementById('livrosPerfilPublico') as HTMLDivElement).innerHTML = slider(
     `Livros de ${html(nome)}`,
