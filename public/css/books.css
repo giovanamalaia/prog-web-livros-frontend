@@ -63,12 +63,13 @@
 
 .book-cover-wrapper {
     width: 100%;
-    height: 220px;
+    aspect-ratio: 2 / 3;
     margin-bottom: 12px;
     border-radius: var(--radius-sm);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
     transition: transform 0.2s ease;
+    background: var(--color-surface-muted);
 }
 
 .book-card:hover .book-cover-wrapper {
@@ -78,7 +79,8 @@
 .book-cover-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    display: block;
+    object-fit: contain;
 }
 
 .placeholder-capa {
@@ -158,7 +160,7 @@
 
 .book-cover-preview {
     width: 200px;
-    height: 290px;
+    aspect-ratio: 2 / 3;
     background: linear-gradient(145deg, #ede9df, #d4cfc5);
     border-radius: var(--radius-md);
     margin-bottom: 14px;
@@ -174,7 +176,9 @@
 .book-cover-preview img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    display: block;
+    object-fit: contain;
+    background: var(--color-surface-muted);
 }
 
 .placeholder-text {
@@ -277,6 +281,10 @@
 
 .book-detail-cover-side img {
     width: 100%;
+    aspect-ratio: 2 / 3;
+    display: block;
+    object-fit: contain;
+    background: var(--color-surface-muted);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
 }
