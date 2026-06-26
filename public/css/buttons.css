@@ -79,6 +79,7 @@
 }
 
 .btn-blue-action:disabled,
+.btn-secondary:disabled,
 .btn-danger-action:disabled {
     cursor: wait;
     opacity: 0.7;

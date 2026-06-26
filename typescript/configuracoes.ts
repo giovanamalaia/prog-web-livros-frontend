@@ -40,4 +40,16 @@ fotoPerfilInput?.addEventListener('change', () => {
   (document.getElementById('fotoConfiguracoes') as HTMLElement).outerHTML =
     `<img src="${url}" class="profile-large-avatar" id="fotoConfiguracoes" alt="Prévia" />`;
 });
+document.getElementById('botaoRedefinirSenha')?.addEventListener('click', async () => {
+  const botao = document.getElementById('botaoRedefinirSenha') as HTMLButtonElement;
+  botao.disabled = true;
+  botao.textContent = 'Enviando...';
+  const resposta = await api('/senha/redefinir-logado/', {
+    method: 'POST',
+    body: { frontend_url: location.origin },
+  });
+  mostrarMensagem(resposta.message || 'Não foi possível enviar o e-mail.', resposta.status === 'success' ? 'success' : 'error');
+  botao.disabled = false;
+  botao.textContent = 'Redefinir senha por e-mail';
+});
 void carregarConfiguracoes();
