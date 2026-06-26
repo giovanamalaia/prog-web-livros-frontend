@@ -9,17 +9,11 @@ Frontend do projeto **Livro**, uma plataforma de troca de livros entre usuarios.
 
 ## Links
 
-- Repositorio do frontend: adicionar link do repositorio frontend
+- Repositorio do frontend: https://github.com/giovanamalaia/prog-web-livros-frontend.git
 - Repositorio do backend: https://github.com/giovanamalaia/prog-web-livros-backend
 - Site do frontend: adicionar link publicado
 - Site do backend/API: adicionar link publicado
 - Swagger do backend: adicionar link publicado para `/swagger/`
-
-## Imagens
-
-![Detalhe do livro](docs/screenshots/detalhe-livro.png)
-![Perfil publico](docs/screenshots/perfil-publico.png)
-![Atributos do livro](docs/screenshots/atributos-livro.png)
 
 ## Escopo do projeto
 
@@ -129,5 +123,4 @@ http://127.0.0.1:8000/api
 ## O que nao funcionou ou exige atencao
 
 - O frontend depende do backend ativo e acessivel em `http://127.0.0.1:8000/api` no ambiente local.
-- Os links publicados precisam ser atualizados neste README antes da entrega final.
 - O e-mail de recuperacao de senha depende da configuracao SMTP do backend.
