@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livrô</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" referrerpolicy="no-referrer">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/buttons.css">
+  <link rel="stylesheet" href="css/toasts.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/profile.css">
+  <link rel="stylesheet" href="css/books.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="app-content">
+      <header class="top-bar">
+        <div class="top-bar-left"></div>
+        <div class="top-bar-right">
+          <button class="user-info-mini" id="linkPerfil" type="button">
+            <span id="topAvatar" class="avatar-placeholder-mini"><i class="fa-solid fa-user"></i></span>
+            <span id="topUsername">Perfil</span>
+          </button>
+          <div class="notif-wrapper">
+            <button class="notif-btn" id="botaoNotificacoes" type="button">
+              <i class="fa-regular fa-bell bell-icon"></i>
+              <span class="notif-badge" id="notifBadge" hidden>0</span>
+            </button>
+            <div class="notif-dropdown" id="notifDropdown" hidden>
+              <h4>Notificações</h4>
+              <div class="notif-items-container" id="notificacoesLista"></div>
+            </div>
+          </div>
+          <button class="btn-as-link" id="botaoSair" type="button">Sair</button>
+        </div>
+      </header>
+      <div id="mensagem" class="toast-container"></div>
+      <div class="page-content-wrapper"><div class="user-profile-header"><div id="fotoPerfil" class="avatar-placeholder-large"><i class="fa-solid fa-user"></i></div><div class="user-profile-info"><h2 id="nomePerfil">Meu perfil</h2><p id="cidadePerfil">Meus livros para troca</p></div></div><div class="user-books-section"><div id="meusLivros"></div><button class="btn-adicionar-livro" id="botaoAdicionarLivro" type="button"><div class="logo-container"><i class="fa-solid fa-book"></i></div>Adicionar livro</button></div></div>
+    </main>
+  </div>
+  <script src="javascript/comum.js?v=20260626-1"></script>
+  <script src="javascript/perfil.js?v=20260626-1"></script>
+</body>
+</html>

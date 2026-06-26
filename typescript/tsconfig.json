@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": ["es2018", "dom"],
+    "rootDir": "./",
+    "outDir": "../public/javascript/",
+    "skipLibCheck": true,
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true
+  },
+  "files": [
+    "comum.ts",
+    "login.ts",
+    "cadastro.ts",
+    "recuperar_senha.ts",
+    "confirmar_senha.ts",
+    "home.ts",
+    "favoritos.ts",
+    "perfil.ts",
+    "adicionar_livro.ts",
+    "detalhe_livro.ts",
+    "configuracoes.ts"
+  ]
+}
