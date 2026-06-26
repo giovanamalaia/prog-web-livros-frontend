@@ -6,6 +6,10 @@ function preencherGeneros(): void {
   const select = document.getElementById('genero') as HTMLSelectElement;
   select.innerHTML = generos.map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
 }
+function mostrarPreviewCapa(src: string): void {
+  const preview = document.getElementById('previewCapa');
+  if (preview) preview.innerHTML = `<img src="${src}" alt="Capa do livro" />`;
+}
 async function carregarLivro(): Promise<void> {
   preencherGeneros();
   if (!livroId) return;
@@ -20,6 +24,7 @@ async function carregarLivro(): Promise<void> {
   (document.getElementById('genero') as HTMLSelectElement).value = livro.genero || '';
   (document.getElementById('estadoLivro') as HTMLSelectElement).value = livro.estado || 'N';
   (document.getElementById('status') as HTMLSelectElement).value = livro.status || 'disponivel';
+  if (livro.capa_url) mostrarPreviewCapa(`${backendBase}${livro.capa_url}`);
 }
 document.getElementById('formLivro')?.addEventListener('submit', async (evento) => {
   evento.preventDefault();
@@ -35,5 +40,10 @@ document.getElementById('formLivro')?.addEventListener('submit', async (evento) 
   });
   if (resposta.status === 'success') location.href = 'perfil.html';
   else mostrarMensagem(resposta.message || errorsToText(resposta.errors), 'error');
+});
+const capaInput = document.getElementById('capa') as HTMLInputElement | null;
+capaInput?.addEventListener('change', () => {
+  const file = capaInput.files?.[0];
+  if (file) mostrarPreviewCapa(URL.createObjectURL(file));
 });
 void carregarLivro();

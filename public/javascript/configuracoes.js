@@ -29,4 +29,12 @@ async function carregarConfiguracoes() {
     if (resposta.status === 'success')
         await carregarConfiguracoes();
 });
+const fotoPerfilInput = document.getElementById('fotoPerfil');
+fotoPerfilInput === null || fotoPerfilInput === void 0 ? void 0 : fotoPerfilInput.addEventListener('change', () => {
+    const file = fotoPerfilInput.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    document.getElementById('fotoConfiguracoes').outerHTML =
+        `<img src="${url}" class="profile-large-avatar" id="fotoConfiguracoes" alt="Prévia" />`;
+});
 void carregarConfiguracoes();

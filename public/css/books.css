@@ -1,5 +1,5 @@
 .page-content-wrapper {
-    margin-top: 40px;
+    margin-top: 16px;
     min-width: 0;
     max-width: 100%;
 }
@@ -129,8 +129,20 @@
 
 .add-book-wrapper {
     display: flex;
-    gap: 150px;
+    gap: 60px;
     max-width: 950px;
+    align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+    .add-book-wrapper {
+        flex-direction: column-reverse;
+        align-items: center;
+    }
+
+    .add-book-form-side {
+        width: 100%;
+    }
 }
 
 .add-book-form-side {
@@ -146,15 +158,17 @@
 
 .book-cover-preview {
     width: 200px;
-    height: 300px;
-    background-color: #e0dcd3;
-    border-radius: var(--radius-sm);
-    margin-bottom: 20px;
+    height: 290px;
+    background: linear-gradient(145deg, #ede9df, #d4cfc5);
+    border-radius: var(--radius-md);
+    margin-bottom: 14px;
     box-shadow: var(--shadow-md);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    border: 1px solid var(--color-border);
+    transition: box-shadow 0.2s;
 }
 
 .book-cover-preview img {
@@ -164,11 +178,52 @@
 }
 
 .placeholder-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     color: var(--color-text-muted);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
+    text-align: center;
+    user-select: none;
 }
 
+.placeholder-text i {
+    font-size: 36px;
+    opacity: 0.35;
+}
+
+.cover-upload-zone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+    width: 200px;
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.cover-upload-zone:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: rgba(74, 164, 255, 0.05);
+}
+
+.cover-upload-zone input[type="file"] {
+    display: none;
+}
+
+/* Legacy field kept for compatibility */
 .cover-upload-field {
     display: flex;
     flex-direction: column;

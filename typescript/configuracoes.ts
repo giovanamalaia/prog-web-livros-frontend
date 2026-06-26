@@ -32,4 +32,12 @@ document.getElementById('formConfiguracoes')?.addEventListener('submit', async (
   );
   if (resposta.status === 'success') await carregarConfiguracoes();
 });
+const fotoPerfilInput = document.getElementById('fotoPerfil') as HTMLInputElement | null;
+fotoPerfilInput?.addEventListener('change', () => {
+  const file = fotoPerfilInput.files?.[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  (document.getElementById('fotoConfiguracoes') as HTMLElement).outerHTML =
+    `<img src="${url}" class="profile-large-avatar" id="fotoConfiguracoes" alt="Prévia" />`;
+});
 void carregarConfiguracoes();
