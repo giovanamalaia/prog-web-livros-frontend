@@ -131,5 +131,6 @@ http://127.0.0.1:8000/api
 
 ## O que nao funcionou ou exige atencao
 
+- **Bloqueio de Cookies no Safari:** Navegadores com políticas muito estritas contra rastreamento (como o Safari via *Intelligent Tracking Prevention*) bloqueiam o envio de cookies de sessão entre domínios diferentes (cross-site cookies). Como o front-end está no Netlify e o back-end no PythonAnywhere, o Safari barra a autenticação. **O projeto foi testado e funciona perfeitamente no Google Chrome.**
 - O frontend depende do backend ativo e acessivel em `http://127.0.0.1:8000/api` no ambiente local (em producao usa `https://giovanamalaia.pythonanywhere.com/api`).
 - O e-mail de recuperacao de senha depende da configuracao SMTP do backend.
