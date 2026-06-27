@@ -11,9 +11,9 @@ Frontend do projeto **Livro**, uma plataforma de troca de livros entre usuarios.
 
 - Repositorio do frontend: https://github.com/giovanamalaia/prog-web-livros-frontend.git
 - Repositorio do backend: https://github.com/giovanamalaia/prog-web-livros-backend
-- Site do frontend: adicionar link publicado
-- Site do backend/API: adicionar link publicado
-- Swagger do backend: adicionar link publicado para `/swagger/`
+- Site do frontend: https://livroapp.netlify.app
+- Site do backend/API: https://giovanamalaia.pythonanywhere.com/api
+- Swagger do backend: https://giovanamalaia.pythonanywhere.com/swagger/
 
 ## Screenshots
 
@@ -130,5 +130,5 @@ http://127.0.0.1:8000/api
 
 ## O que nao funcionou ou exige atencao
 
-- O frontend depende do backend ativo e acessivel em `http://127.0.0.1:8000/api` no ambiente local.
+- O frontend depende do backend ativo e acessivel em `http://127.0.0.1:8000/api` no ambiente local (em producao usa `https://giovanamalaia.pythonanywhere.com/api`).
 - O e-mail de recuperacao de senha depende da configuracao SMTP do backend.

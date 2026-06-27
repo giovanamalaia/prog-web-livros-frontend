@@ -2,7 +2,7 @@
 // aponta para o backend local em desenvolvimento ou para o publicado em produção
 const backendAddress = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
     ? 'http://127.0.0.1:8000/api'
-    : 'https://SEU-BACKEND-PUBLICADO.com/api';
+    : 'https://giovanamalaia.pythonanywhere.com/api';
 const backendBase = backendAddress.replace(/\/api$/, '');
 // chave usada para marcar no localStorage que o usuário está logado
 const AUTH_KEY = 'livro_auth';
