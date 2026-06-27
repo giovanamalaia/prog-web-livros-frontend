@@ -6,7 +6,7 @@ const backendAddress = window.location.hostname === '127.0.0.1' || window.locati
 const backendBase = backendAddress.replace(/\/api$/, '');
 // chave usada para marcar no localStorage que o usuário está logado
 const AUTH_KEY = 'livro_auth';
-let csrfReady = false;
+let csrfToken = '';
 // lista de siglas de estados brasileiros
 const estados = [
     'AC',
@@ -116,12 +116,14 @@ function exigirLogin() {
     if (localStorage.getItem(AUTH_KEY) !== '1')
         location.href = 'index.html';
 }
-// garante que o cookie csrftoken está disponível antes de chamadas que modificam dados
+// garante que o csrfToken está disponível antes de chamadas que modificam dados
 async function ensureCsrf() {
-    if (csrfReady)
+    if (csrfToken)
         return;
-    await fetch(`${backendAddress}/csrf/`, { credentials: 'include' });
-    csrfReady = true;
+    const resposta = await fetch(`${backendAddress}/csrf/`, { credentials: 'include' });
+    const dados = await resposta.json();
+    if (dados.csrfToken)
+        csrfToken = dados.csrfToken;
 }
 // envia uma requisição ao backend e devolve o json da resposta
 async function api(path, options = {}) {
@@ -136,9 +138,8 @@ async function api(path, options = {}) {
     }
     if (method !== 'GET') {
         await ensureCsrf();
-        const token = cookie('csrftoken');
-        if (token)
-            headers.set('X-CSRFToken', token);
+        if (csrfToken)
+            headers.set('X-CSRFToken', csrfToken);
     }
     try {
         const resposta = await fetch(`${backendAddress}${path}`, { method, headers, body, credentials: 'include' });
